@@ -1,0 +1,19 @@
+{
+  "name": "netcode.js",
+  "version": "1.0.0",
+  "description": "NetCode for web videogames",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "netcode",
+    "websocket",
+    "realtime",
+    "game",
+    "videogame",
+    "multiplayer"
+  ],
+  "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
+  "license": "MIT"
+}
