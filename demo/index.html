@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="../dist/netcode-client.js"></script>
+</head>
+<body>
+    <script>
+        window.addEventListener('load', () => {
+            const { Client } = netcode;
+
+            new Client('ws://localhost:8888');
+        });
+    </script>
+</body>
+</html>

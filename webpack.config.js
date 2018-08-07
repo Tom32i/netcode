@@ -1,17 +1,27 @@
-const path = require('path');
-
 module.exports = {
   entry: {
-    client: './src/client/Client.js',
-    server: './src/server/Client.js',
+    client: './src/client/index.js',
+    server: './src/server/index.js',
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'client.js'
+    filename: 'netcode-[name].js',
+    path: __dirname + '/dist',
+    library: 'netcode',
+    libraryTarget: 'umd'
   },
-  output: {
-    filename: '[name].js',
-    path: __dirname + '/dist'
-  }
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['babel-preset-env']
+          }
+        }
+      }
+    ],
+  },
   //mode: 'production'
 };

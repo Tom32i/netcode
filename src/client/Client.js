@@ -1,4 +1,4 @@
-class Client {
+export default class Client {
   constructor(host, encoder = null) {
     this.socket = new WebSocket(host, 'websocket');
     this.encoder = encoder;

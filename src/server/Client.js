@@ -1,5 +1,0 @@
-class Server {
-    constructor() {
-
-    }
-}
