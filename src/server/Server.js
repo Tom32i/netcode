@@ -1,8 +1,8 @@
 import http from 'http';
 import EventEmitter from 'events';
 import WebSocket from 'faye-websocket';
-import JsonEncoder from '../encoder/JsonEncoder';
-import Client from './Client';
+import JsonEncoder from 'netcode/encoder/JsonEncoder';
+import Client from 'netcode/server/Client';
 
 export default class Server extends EventEmitter {
     /**
@@ -19,8 +19,8 @@ export default class Server extends EventEmitter {
         this.onError = this.onError.bind(this);
         this.removeClient = this.removeClient.bind(this);
 
-        this.server = http.createServer();
         this.encoder = encoder;
+        this.server = http.createServer();
         this.clients = new Map();
 
         this.server.on('error', this.onError);

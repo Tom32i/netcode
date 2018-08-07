@@ -1,12 +1,13 @@
 import EventEmitter from 'tom32i-event-emitter.js';
-import JsonEncoder from '../encoder/JsonEncoder';
+import JsonEncoder from 'netcode/encoder/JsonEncoder';
 
 export default class Client extends EventEmitter {
     constructor(host, encoder = new JsonEncoder()) {
         super();
 
-        this.socket = new WebSocket(host, 'websocket');
         this.encoder = encoder;
+        this.socket = new WebSocket(host, 'websocket');
+        this.socket.binaryType = 'arraybuffer';//this.encoder.constructor.binaryType;
 
         this.onOpen = this.onOpen.bind(this);
         this.onClose = this.onClose.bind(this);

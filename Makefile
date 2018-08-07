@@ -9,7 +9,6 @@ build:
 start: demo-client demo-server
 
 demo-client:
-	open http://localhost:8000
 	php -S 0.0.0.0:8000 -t .
 
 demo-server:

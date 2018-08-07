@@ -7,16 +7,24 @@
 <body>
     <script>
         window.addEventListener('load', () => {
-            const { Client } = netcode;
-            const client = new Client('ws://localhost:8002');
+            const { Client, BinaryEncoder, Handler, Int16Handler, TimeStampHandler } = netcode;
+            const encoder = new BinaryEncoder([
+                new Handler('open'),
+                new Int16Handler('id'),
+                new TimeStampHandler('ping'),
+                new TimeStampHandler('pong'),
+            ]);
+            const client = new Client('ws://localhost:8002', encoder);
+            let ping;
 
-            client.addEventListener('pong', ({ ping, pong }) => {
+            client.addEventListener('pong', pong => {
                 console.info('pong: %s ms', pong - ping);
             });
 
             client.addEventListener('id', id => {
                 console.log('connected with id %s', id);
-                client.send('ping', Date.now());
+                ping = Date.now();
+                client.send('ping', ping);
             });
 
             client.addEventListener('open', () => {

@@ -11,16 +11,23 @@ const rules = [
   }
 ];
 
+const resolve = {
+  alias: {
+    'netcode': `${__dirname}/src/`,
+  }
+}
+
 const clientConfig = {
   target: 'web',
   entry: './src/client/index.js',
   output: {
     filename: 'netcode-client.js',
-    path: __dirname + '/dist',
+    path: `${__dirname}/dist`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
   module: { rules },
+  resolve,
   //mode: 'production'
 };
 
@@ -29,11 +36,12 @@ const serverConfig = {
   entry: './src/server/index.js',
   output: {
     filename: 'netcode-server.js',
-    path: __dirname + '/dist',
+    path: `${__dirname}/dist`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
   module: { rules },
+  resolve,
   //mode: 'production'
 };
 

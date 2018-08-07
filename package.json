@@ -1,5 +1,5 @@
 {
-  "name": "netcode.js",
+  "name": "netcode",
   "version": "1.0.0",
   "description": "NetCode for web videogames",
   "main": "index.js",
