@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="/dist/netcode-client.js"></script>
+</head>
+<body>
+    <script>
+        window.addEventListener('load', () => {
+            const { Client } = netcode;
+            const client = new Client('ws://localhost:8002');
+
+            client.addEventListener('pong', ({ ping, pong }) => {
+                console.info('pong: %s ms', pong - ping);
+            });
+
+            client.addEventListener('id', id => {
+                console.log('connected with id %s', id);
+                client.send('ping', Date.now());
+            });
+
+            client.addEventListener('open', () => {
+                console.info('Connection open.');
+            });
+        });
+    </script>
+</body>
+</html>

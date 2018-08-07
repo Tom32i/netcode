@@ -1,5 +1,5 @@
-import Client from './Client';
+import Server from './Server';
 
 module.exports = {
-    Client
+    Server
 };

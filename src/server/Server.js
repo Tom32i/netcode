@@ -1,31 +1,31 @@
-const http = require('http');
-const EventEmitter = require('events');
-const WebSocket = require('faye-websocket');
+import http from 'http';
+import EventEmitter from 'events';
+import WebSocket from 'faye-websocket';
+import JsonEncoder from '../encoder/JsonEncoder';
+import Client from './Client';
 
-class Server extends EventEmitter {
+export default class Server extends EventEmitter {
     /**
      * Constructor
      *
-     * @param {String} url
      * @param {Number} port
      * @param {String} host
      */
-    constructor(url, port = 8080, host = 'localhost', encoder = null) {
+    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder()) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
-        this.onRequest = this.onRequest.bind(this);
-        this.onDisconnect = this.onDisconnect.bind(this);
+        //this.onRequest = this.onRequest.bind(this);
         this.onError = this.onError.bind(this);
+        this.removeClient = this.removeClient.bind(this);
 
-        this.port = port;
-        this.host = host;
         this.server = http.createServer();
         this.encoder = encoder;
+        this.clients = new Map();
 
         this.server.on('error', this.onError);
         this.server.on('upgrade', this.onUpgrade);
-        this.server.on('request', this.onRequest);
+        //this.server.on('request', this.onRequest);
 
         this.start(port, host);
     }
@@ -36,10 +36,8 @@ class Server extends EventEmitter {
      * @param {Number} port
      * @param {String} host
      */
-    onReady(port, host) {
+    start(port, host) {
         this.server.listen(port, host);
-        this.log(`Server listening at "${this.host}:${this.port}"`);
-        console.info();
         this.emit('ready');
     }
 
@@ -50,9 +48,19 @@ class Server extends EventEmitter {
      */
     addClient(client) {
         this.clients.set(client.id, client);
-        client.addListener('close', this.onDisconnect);
-        this.game.onJoin(client);
+        client.addListener('close', this.removeClient);
         this.emit('client:join', client);
+    }
+
+    /**
+     * Remove a client
+     *
+     * @param {Client} client
+     */
+    removeClient(client) {
+        client.removeListener('close', this.removeClient);
+        this.clients.delete(client.id);
+        this.emit('client:leave', client);
     }
 
     /**
@@ -79,39 +87,16 @@ class Server extends EventEmitter {
     }
 
     /**
-     * On socket connection
-     *
-     * @param {SocketClient} client
-     */
-    onDisconnect(client) {
-        client.removeListener('close', this.onDisconnect);
-        this.clients.delete(client.id);
-        this.game.onLeave(client);
-        this.emit('client:leave', client);
-        console.info('Client %s disconnected.', client.id);
-    }
-
-    /**
      * On request
      *
      * @param {Request} request
      * @param {Response} response
      */
-    onRequest(request, response) {
+    /*onRequest(request, response) {
         switch (request.url) {
             case '/':
                 response.writeHead(200, { 'Content-Type': 'application/json' });
                 response.end(JSON.stringify(this.getStatus()));
-                break;
-
-            case '/current':
-                if (!this.game.song || !this.game.song.store.isReady()) {
-                    response.writeHead(404);
-                    response.end();
-                } else {
-                    this.game.song.store.get().pipe(response);
-                }
-
                 break;
 
             default:
@@ -119,7 +104,7 @@ class Server extends EventEmitter {
                 response.end();
                 break;
         }
-    }
+    }*/
 
     /**
      * On error
@@ -127,34 +112,6 @@ class Server extends EventEmitter {
      * @param {Error} error
      */
     onError(error) {
-        throw error;
-    }
-
-    /**
-     * Get status
-     *
-     * @return {Object}
-     */
-    getStatus() {
-        return {
-            name: this.game.playlist.name,
-            cover: this.game.playlist.cover,
-            size: this.clients.size,
-        };
-    }
-
-    /**
-     * Log the given message
-     *
-     * @param {[type]} message
-     *
-     * @return {[type]}
-     */
-    log(message) {
-        if (!this.silent) {
-            console.info(message);
-        }
+        this.emit('error', error);
     }
 }
-
-module.exports = Server;
