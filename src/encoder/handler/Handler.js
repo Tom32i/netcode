@@ -40,7 +40,7 @@ export default class Handler {
      *
      * @return {Array}
      */
-    decode(buffer) {
+    decode() {
         return { name: this.name };
     }
 }

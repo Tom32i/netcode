@@ -7,7 +7,7 @@ export default class Client extends EventEmitter {
 
         this.encoder = encoder;
         this.socket = new WebSocket(host, 'websocket');
-        this.socket.binaryType = 'arraybuffer';//this.encoder.constructor.binaryType;
+        this.socket.binaryType = this.encoder.constructor.binaryType;
 
         this.onOpen = this.onOpen.bind(this);
         this.onClose = this.onClose.bind(this);
@@ -41,7 +41,7 @@ export default class Client extends EventEmitter {
     /**
      * On connexion open
      */
-    onOpen(event) {
+    onOpen() {
         this.emit('open');
     }
 

@@ -1,5 +1,5 @@
 export default class BinaryEncoder {
-    static get binaryType() { return 'arraybuffer'; };
+    static get binaryType() { return 'arraybuffer'; }
 
     constructor(handlers = []) {
         this.handlers = handlers;

@@ -1,5 +1,5 @@
 export default class JsonEncoder {
-    static get binaryType() { return 'blob'; };
+    static get binaryType() { return 'blob'; }
 
     /**
      * Encode
