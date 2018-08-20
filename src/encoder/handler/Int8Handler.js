@@ -1,16 +1,16 @@
 import Handler from 'netcode/encoder/handler/Handler';
-import LongIntCodec from 'netcode/encoder/codec/LongIntCodec';
+import Int8Codec from 'netcode/encoder/codec/Int8Codec';
 
 /**
- * Timestamp event handler
+ *  8 bit Int event handler (0 to 255)
  */
-export default class TimeStampHandler extends Handler {
+export default class Int8Handler extends Handler {
     /**
      * Byte length
      *
      * @type {Number}
      */
-    static get byteLength() { return Handler.byteLength + 6; }
+    static get byteLength() { return Handler.byteLength + Int8Codec.byteLength; }
 
     /**
      * {@inheritdoc}
@@ -18,7 +18,7 @@ export default class TimeStampHandler extends Handler {
     encode(data, extraLength = 0) {
         const buffer = super.encode(data, extraLength);
 
-        LongIntCodec.encode(buffer, Handler.byteLength, 6, data);
+        Int8Codec.encode(buffer, Handler.byteLength, data);
 
         return buffer;
     }
@@ -27,6 +27,6 @@ export default class TimeStampHandler extends Handler {
      * {@inheritdoc}
      */
     decode(buffer) {
-        return LongIntCodec.decode(buffer, Handler.byteLength, 6);
+        return Int8Codec.decode(buffer, Handler.byteLength);
     }
 }

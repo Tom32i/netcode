@@ -1,7 +1,8 @@
 import Handler from 'netcode/encoder/handler/Handler';
+import Int32Codec from 'netcode/encoder/codec/Int32Codec';
 
 /**
- *  32 bit encoder Int event handler (0 to 4294967295)
+ *  32 bit Int event handler (0 to 4294967295)
  */
 export default class Int32Handler extends Handler {
     /**
@@ -9,7 +10,7 @@ export default class Int32Handler extends Handler {
      *
      * @type {Number}
      */
-    static get byteLength() { return Handler.byteLength + 4; }
+    static get byteLength() { return Handler.byteLength + Int32Codec.byteLength; }
 
     /**
      * {@inheritdoc}
@@ -17,7 +18,7 @@ export default class Int32Handler extends Handler {
     encode(data, extraLength = 0) {
         const buffer = super.encode(data, extraLength);
 
-        new Uint32Array(buffer, Handler.byteLength, 1)[0] = data;
+        Int32Codec.encode(buffer, Handler.byteLength, data);
 
         return buffer;
     }
@@ -26,9 +27,6 @@ export default class Int32Handler extends Handler {
      * {@inheritdoc}
      */
     decode(buffer) {
-        return {
-            name: this.name,
-            data: new Uint32Array(buffer, Handler.byteLength, 1)[0],
-        };
+        return Int32Codec.decode(buffer, Handler.byteLength);
     }
 }

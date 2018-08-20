@@ -1,3 +1,5 @@
+import Int16Codec from 'netcode/encoder/codec/Int16Codec';
+
 /**
  * Handler
  */
@@ -7,7 +9,7 @@ export default class Handler {
      *
      * @type {Number}
      */
-    static get byteLength() { return 2; }
+    static get byteLength() { return Int16Codec.byteLength; }
 
     /**
      * Constructor
@@ -28,7 +30,7 @@ export default class Handler {
     encode(data, extraLength = 0) {
         const buffer = new ArrayBuffer(this.constructor.byteLength + extraLength);
 
-        new Uint16Array(buffer, 0, 1)[0] = this.index;
+        Int16Codec.encode(buffer, 0, this.index);
 
         return buffer;
     }
@@ -41,6 +43,6 @@ export default class Handler {
      * @return {Array}
      */
     decode() {
-        return { name: this.name };
+        return null;
     }
 }

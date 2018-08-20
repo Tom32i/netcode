@@ -1,3 +1,5 @@
+import Int16Codec from 'netcode/encoder/codec/Int16Codec';
+
 export default class BinaryEncoder {
     static get binaryType() { return 'arraybuffer'; }
 
@@ -33,14 +35,14 @@ export default class BinaryEncoder {
      * @return {Array}
      */
     decode(buffer) {
-        const view = new Uint16Array(buffer, 0, 1);
-        const handler = this.handlers[view[0]];
+        const index = Int16Codec.decode(buffer, 0);
+        const handler = this.handlers[index];
 
         if (!handler) {
-            throw new Error(`No handler found for event "${name}"`);
+            throw new Error(`No handler found at index "${index}"`);
         }
 
-        return handler.decode(buffer);
+        return { name: handler.name, data: handler.decode(buffer) };
     }
 
 }
