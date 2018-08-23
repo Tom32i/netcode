@@ -1,21 +1,23 @@
 import Client from 'netcode/client/Client';
 import JsonEncoder from 'netcode/encoder/JsonEncoder';
 import BinaryEncoder from 'netcode/encoder/BinaryEncoder';
-import Handler from 'netcode/encoder/handler/Handler';
-import Int8Handler from 'netcode/encoder/handler/Int8Handler';
-import Int16Handler from 'netcode/encoder/handler/Int16Handler';
-import Int32Handler from 'netcode/encoder/handler/Int32Handler';
-import TimeStampHandler from 'netcode/encoder/handler/TimeStampHandler';
-import BooleanHandler from 'netcode/encoder/handler/BooleanHandler';
+import Codec from 'netcode/encoder/codec/Codec';
+import Int8Codec from 'netcode/encoder/codec/Int8Codec';
+import Int16Codec from 'netcode/encoder/codec/Int16Codec';
+import Int32Codec from 'netcode/encoder/codec/Int32Codec';
+import LongIntCodec from 'netcode/encoder/codec/LongIntCodec';
+import BooleanCodec from 'netcode/encoder/codec/BooleanCodec';
+import StringCodec from 'netcode/encoder/codec/StringCodec';
 
 module.exports = {
     Client,
     JsonEncoder,
     BinaryEncoder,
-    Handler,
-    Int8Handler,
-    Int16Handler,
-    Int32Handler,
-    TimeStampHandler,
-    BooleanHandler,
+    Codec,
+    Int8Codec,
+    Int16Codec,
+    Int32Codec,
+    LongIntCodec,
+    BooleanCodec,
+    StringCodec,
 };

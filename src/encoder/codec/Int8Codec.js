@@ -1,27 +1,27 @@
+import Codec from './Codec';
+
 /**
  *  8 bit Int codec (0 to 255)
  */
-export default class Int8Codec  {
+export default class Int8Codec extends Codec {
     /**
-     * Byte length
-     *
      * @type {Number}
      */
-    static get byteLength() { return 1; }
-
-    /**
-     * {@inheritdoc}
-     */
-    static encode(buffer, offset, data) {
-        new Uint8Array(buffer, offset, 1)[0] = data;
-
-        return offset + this.byteLength;
+    getByteLength() {
+        return Uint8Array.BYTES_PER_ELEMENT;
     }
 
     /**
      * {@inheritdoc}
      */
-    static decode(buffer, offset) {
-        return new Uint8Array(buffer, offset, 1)[0];
+    encode(buffer, offset, data) {
+        new DataView(buffer).setUint8(offset, data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    decode(buffer, offset) {
+        return new DataView(buffer).getUint8(offset);
     }
 }

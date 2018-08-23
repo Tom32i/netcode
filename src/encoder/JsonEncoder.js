@@ -1,4 +1,9 @@
 export default class JsonEncoder {
+    /**
+     * WebSocket binary type
+     *
+     * @return {String}
+     */
     static get binaryType() { return 'blob'; }
 
     /**

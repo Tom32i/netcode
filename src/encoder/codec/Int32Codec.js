@@ -1,27 +1,27 @@
+import Codec from './Codec';
+
 /**
  *  32 bit Int codec (0 to 4294967295)
  */
-export default class Int32Codec {
+export default class Int32Codec extends Codec {
     /**
-     * Byte length
-     *
      * @type {Number}
      */
-    static get byteLength() { return 4; }
-
-    /**
-     * {@inheritdoc}
-     */
-    static encode(buffer, offset, data) {
-        new Uint32Array(buffer, offset, 1)[0] = data;
-
-        return offset + this.byteLength;
+    getByteLength() {
+        return Uint32Array.BYTES_PER_ELEMENT;
     }
 
     /**
      * {@inheritdoc}
      */
-    static decode(buffer, offset) {
-        return new Uint32Array(buffer, offset, 1)[0];
+    encode(buffer, offset, data) {
+        new DataView(buffer).setUint32(offset, data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    decode(buffer, offset) {
+        return new DataView(buffer).getUint32(offset);
     }
 }

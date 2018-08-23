@@ -1,27 +1,27 @@
+import Codec from './Codec';
+
 /**
  *  16 bit Int codec (0 to 65535)
  */
-export default class Int16Codec  {
+export default class Int16Codec extends Codec {
     /**
-     * Byte length
-     *
      * @type {Number}
      */
-    static get byteLength() { return 2; }
-
-    /**
-     * {@inheritdoc}
-     */
-    static encode(buffer, offset, data) {
-        new Uint16Array(buffer, offset, 1)[0] = data;
-
-        return offset + this.byteLength;
+    getByteLength() {
+        return Uint16Array.BYTES_PER_ELEMENT;
     }
 
     /**
      * {@inheritdoc}
      */
-    static decode(buffer, offset) {
-        return new Uint16Array(buffer, offset, 1)[0];
+    encode(buffer, offset, data) {
+        new DataView(buffer).setUint16(offset, data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    decode(buffer, offset) {
+        return new DataView(buffer).getUint16(offset);
     }
 }

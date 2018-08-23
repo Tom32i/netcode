@@ -1,27 +1,27 @@
+import Codec from './Codec';
+
 /**
  *  Boolean codec
  */
-export default class BooleanCodec {
+export default class BooleanCodec extends Codec {
     /**
-     * Byte length
-     *
      * @type {Number}
      */
-    static get byteLength() { return 1; }
-
-    /**
-     * {@inheritdoc}
-     */
-    static encode(buffer, offset, data) {
-        new Uint8Array(buffer, offset, 1)[0] = data ? 1 : 0;
-
-        return offset + this.byteLength;
+    getByteLength() {
+        return 1;
     }
 
     /**
      * {@inheritdoc}
      */
-    static decode(buffer, offset) {
-        return new Uint8Array(buffer, offset, 1)[0] > 0;
+    encode(buffer, offset, data) {
+        new DataView(buffer).setUint8(offset, data ? 1 : 0);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    decode(buffer, offset) {
+        return new DataView(buffer).getUint8(offset) > 0;
     }
 }
