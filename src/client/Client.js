@@ -2,6 +2,10 @@ import EventEmitter from 'tom32i-event-emitter.js';
 import JsonEncoder from 'netcode/encoder/JsonEncoder';
 
 export default class Client extends EventEmitter {
+    /**
+     * @param {String} host
+     * @param {JsonEncoder|BinaryEncoder} encoder
+     */
     constructor(host, encoder = new JsonEncoder()) {
         super();
 

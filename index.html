@@ -3,46 +3,7 @@
 <head>
     <title></title>
     <script src="/dist/netcode-client.js"></script>
+    <script src="/demo-client.js"></script>
 </head>
-<body>
-    <script>
-        window.addEventListener('load', () => {
-            const { Client, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = netcode;
-            const encoder = new BinaryEncoder([
-                ['open', new Codec()],
-                ['id', new Int16Codec()],
-                ['ping', new LongIntCodec(6)],
-                ['pong', new LongIntCodec(6)],
-                ['inverse', new BooleanCodec()],
-                ['greeting', new StringCodec()],
-            ]);
-            const client = new Client('ws://localhost:8002', encoder);
-            let ping;
-
-            client.addEventListener('pong', pong => {
-                console.info('pong: %s ms', pong - ping);
-            });
-
-            client.addEventListener('id', id => {
-                console.log('connected with id %s', id);
-                ping = Date.now();
-                client.send('ping', ping);
-            });
-
-            client.addEventListener('inverse', status => {
-                client.send('inverse', !status);
-                console.log('Inverse received: %s', status);
-                client.send('greeting', 'Hello, I\'m client!');
-            });
-
-            client.addEventListener('greeting', message => {
-                console.log('Servers geets you: "%s"', message);
-            });
-
-            client.addEventListener('open', () => {
-                console.info('Connection open.');
-            });
-        });
-    </script>
-</body>
+<body></body>
 </html>
