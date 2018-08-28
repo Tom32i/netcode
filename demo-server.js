@@ -1,4 +1,4 @@
-const { Server, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = require('./dist/server');
+const { Server, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = require('./server');
 
 // Register your events
 const encoder = new BinaryEncoder([

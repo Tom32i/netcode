@@ -1,8 +1,7 @@
 {
   "name": "netcode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NetCode for web video games",
-  "main": "dist",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,8 +14,9 @@
     "multiplayer"
   ],
   "files": [
-    "dist/*",
-    "src/*"
+    "src/*",
+    "client.js",
+    "server.js"
   ],
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",

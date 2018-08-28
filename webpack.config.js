@@ -22,7 +22,7 @@ const clientConfig = {
   entry: './src/client/index.js',
   output: {
     filename: 'client.js',
-    path: `${__dirname}/dist`,
+    path: `${__dirname}`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
@@ -35,7 +35,7 @@ const serverConfig = {
   entry: './src/server/index.js',
   output: {
     filename: 'server.js',
-    path: `${__dirname}/dist`,
+    path: `${__dirname}`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
