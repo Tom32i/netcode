@@ -21,28 +21,26 @@ const clientConfig = {
   target: 'web',
   entry: './src/client/index.js',
   output: {
-    filename: 'netcode-client.js',
+    filename: 'client.js',
     path: `${__dirname}/dist`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
   module: { rules },
   resolve,
-  //mode: 'production'
 };
 
 const serverConfig = {
   target: 'node',
   entry: './src/server/index.js',
   output: {
-    filename: 'netcode-server.js',
+    filename: 'server.js',
     path: `${__dirname}/dist`,
     library: 'netcode',
     libraryTarget: 'umd'
   },
   module: { rules },
   resolve,
-  //mode: 'production'
 };
 
 module.exports = [ serverConfig, clientConfig ];

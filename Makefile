@@ -17,3 +17,6 @@ demo-server:
 
 lint:
 	./node_modules/.bin/eslint src/* --ext .js,.json --fix
+
+publish: build
+	npm publish . --access public
