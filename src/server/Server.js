@@ -1,6 +1,6 @@
 import http from 'http';
 import EventEmitter from 'events';
-import WebSocket from 'faye-websocket';
+import WebSocket from 'websocket-driver';
 import JsonEncoder from 'netcode/encoder/JsonEncoder';
 import Client from 'netcode/server/Client';
 
@@ -68,20 +68,23 @@ export default class Server extends EventEmitter {
      *
      * @param {Request} request
      * @param {Socket} socket
-     * @param {Object} head
+     * @param {Object} body
      *
      * @return {Boolean}
      */
-    onUpgrade(request, socket, head) {
+    onUpgrade(request, socket, body) {
         if (!WebSocket.isWebSocket(request)) {
             return socket.end();
         }
 
-        const options = { maxLength: Math.pow(2, 9) - 1, ping: 30 };
-        const websocket = new WebSocket(request, socket, head, 'websocket', options);
         const ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
+        const options = { maxLength: Math.pow(2, 9) - 1, protocols: ['websocket'] };
+        const driver = WebSocket.http(request, options);
 
-        this.addClient(new Client(websocket, ip, this.encoder));
+        driver.io.write(body);
+        socket.pipe(driver.io).pipe(socket);
+
+        this.addClient(new Client(driver, ip, this.encoder));
 
         return true;
     }

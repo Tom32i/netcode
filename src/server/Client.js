@@ -23,6 +23,10 @@ export default class Client extends EventEmitter {
         this.socket.on('message', this.onMessage);
         this.socket.on('error', this.onError);
         this.socket.on('close', this.onClose);
+
+        this.socket.send = this.encoder.constructor.binaryType === 'arraybuffer' ? this.socket.binary : this.socket.text;
+
+        this.socket.start();
     }
 
     /**

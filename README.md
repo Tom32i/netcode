@@ -3,8 +3,6 @@ Netcode
 
 A simple client & server binary-encoded websocket communication system for web video games.
 
-Node Websocket implementation used: `faye-websocket`.
-
 ## Installation
 
 `npm add netcode`
