@@ -1,4 +1,4 @@
-import Int8Codec from 'netcode/encoder/codec/Int8Codec';
+import Int8Codec from 'netcode/src/encoder/codec/Int8Codec';
 
 export default class BinaryEncoder {
     /**

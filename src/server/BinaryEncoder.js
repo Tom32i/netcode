@@ -1,4 +1,4 @@
-import BaseBinaryEncoder from 'netcode/encoder/BinaryEncoder';
+import BaseBinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
 
 /**
  * Binary Encoder wrapper for Node

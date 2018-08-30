@@ -1,8 +1,8 @@
 import http from 'http';
 import EventEmitter from 'events';
 import WebSocket from 'websocket-driver';
-import JsonEncoder from 'netcode/encoder/JsonEncoder';
-import Client from 'netcode/server/Client';
+import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
+import Client from 'netcode/src/server/Client';
 
 export default class Server extends EventEmitter {
     /**

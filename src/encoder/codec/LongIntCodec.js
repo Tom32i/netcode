@@ -1,4 +1,4 @@
-import { bytePad } from 'netcode/utils';
+import { bytePad } from 'netcode/src/utils';
 import Codec from './Codec';
 
 /**

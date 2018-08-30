@@ -13,7 +13,7 @@ const rules = [
 
 const resolve = {
   alias: {
-    'netcode': `${__dirname}/src/`,
+    'netcode': `${__dirname}/`,
   }
 }
 
