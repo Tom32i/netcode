@@ -11,7 +11,7 @@ export default class Server extends EventEmitter {
      * @param {Number} port
      * @param {String} host
      */
-    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder()) {
+    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder(), ping = 0) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
@@ -21,7 +21,12 @@ export default class Server extends EventEmitter {
 
         this.encoder = encoder;
         this.server = http.createServer();
+        this.ping = ping;
         this.clients = new Map();
+        this.options = {
+            maxLength: Math.pow(2, 9) - 1,
+            protocols: ['websocket']
+        };
 
         this.server.on('error', this.onError);
         this.server.on('upgrade', this.onUpgrade);
@@ -69,8 +74,6 @@ export default class Server extends EventEmitter {
      * @param {Request} request
      * @param {Socket} socket
      * @param {Object} body
-     *
-     * @return {Boolean}
      */
     onUpgrade(request, socket, body) {
         if (!WebSocket.isWebSocket(request)) {
@@ -78,15 +81,12 @@ export default class Server extends EventEmitter {
         }
 
         const ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
-        const options = { maxLength: Math.pow(2, 9) - 1, protocols: ['websocket'] };
-        const driver = WebSocket.http(request, options);
+        const driver = WebSocket.http(request, this.options);
 
         driver.io.write(body);
         socket.pipe(driver.io).pipe(socket);
 
-        this.addClient(new Client(driver, ip, this.encoder));
-
-        return true;
+        this.addClient(new Client(driver, ip, this.encoder, this.ping));
     }
 
     /**

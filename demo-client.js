@@ -49,4 +49,9 @@ window.addEventListener('load', () => {
     client.addEventListener('open', () => {
         console.info('Connection open.');
     });
+
+    // Listen for connection close
+    client.addEventListener('close', () => {
+        console.info('Connection closed.');
+    });
 });
