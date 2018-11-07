@@ -6,12 +6,14 @@ import Client from 'netcode/src/server/Client';
 
 export default class Server extends EventEmitter {
     /**
-     * Constructor
-     *
-     * @param {Number} port
-     * @param {String} host
+     * @param {Number} port Port
+     * @param {String} host Host
+     * @param {JsonEncoder|BinaryEncoder} encoder
+     * @param {Number} ping Ping frequency in seconds (0 for no ping)
+     * @param {Number} maxLength Paquet max length in bit
+     * @param {Array} protocols Supported protocols
      */
-    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder(), ping = 0) {
+    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder(), ping = 0, maxLength = Math.pow(2, 9) - 1, protocols = ['websocket']) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
@@ -21,11 +23,11 @@ export default class Server extends EventEmitter {
 
         this.encoder = encoder;
         this.server = http.createServer();
-        this.ping = ping;
         this.clients = new Map();
+        this.ping = ping;
         this.options = {
-            maxLength: Math.pow(2, 9) - 1,
-            protocols: ['websocket']
+            maxLength,
+            protocols,
         };
 
         this.server.on('error', this.onError);
@@ -86,7 +88,7 @@ export default class Server extends EventEmitter {
         driver.io.write(body);
         socket.pipe(driver.io).pipe(socket);
 
-        this.addClient(new Client(driver, ip, this.encoder, this.ping));
+        this.addClient(new Client(driver, ip, this.encoder, this.ping * 1000));
     }
 
     /**

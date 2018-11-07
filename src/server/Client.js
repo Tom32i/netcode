@@ -7,9 +7,9 @@ export default class Client extends EventEmitter {
      * @param {WebSocket} socket
      * @param {String} ip
      * @param {Encoder} encoder
-     * @param {Number} pingFrequency
+     * @param {Number} pingFrequency Ping frequency in milliseconds
      */
-    constructor(socket, ip, encoder, pingFrequency = 5 * 1000) {
+    constructor(socket, ip, encoder, pingFrequency = 0) {
         super();
 
         this.id = ++INDEX;
@@ -58,7 +58,7 @@ export default class Client extends EventEmitter {
     /**
      * Start ping at given interval
      *
-     * @param {Number} frequency
+     * @param {Number} frequency Ping frequency in milliseconds
      */
     startPing(frequency) {
         if (frequency) {
@@ -88,9 +88,13 @@ export default class Client extends EventEmitter {
      * @param {Event} event
      */
     onMessage(event) {
-        const { name, data } = this.encoder.decode(event.data);
+        try {
+            const { name, data } = this.encoder.decode(event.data);
 
-        this.emit(name, data, this);
+            this.emit(name, data, this);
+        } catch (error) {
+            console.error('[ERROR] Could not parse message:', error, '\n\r\tEvent: ', event);
+        }
     }
 
     /**
