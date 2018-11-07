@@ -39,7 +39,7 @@ export default class Client extends EventEmitter {
      */
     close() {
         this.socket.close();
-        this.onClose();
+        //this.onClose();
     }
 
     /**

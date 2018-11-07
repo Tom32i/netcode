@@ -55,6 +55,10 @@ export default class BinaryEncoder {
      * @return {Object}
      */
     decode(buffer) {
+        if (!buffer.byteLength) {
+            throw new Error('Empty buffer');
+        }
+
         const id = this.idCodec.decode(buffer, 0);
         const handler = this.handlersById[id];
 

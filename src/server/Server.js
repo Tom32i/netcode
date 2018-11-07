@@ -6,12 +6,14 @@ import Client from 'netcode/src/server/Client';
 
 export default class Server extends EventEmitter {
     /**
-     * Constructor
-     *
-     * @param {Number} port
-     * @param {String} host
+     * @param {Number} port Port
+     * @param {String} host Host
+     * @param {JsonEncoder|BinaryEncoder} encoder
+     * @param {Number} ping Ping frequency in seconds (0 for no ping)
+     * @param {Number} maxLength Paquet max length in bit
+     * @param {Array} protocols Supported protocols
      */
-    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder()) {
+    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder(), ping = 0, maxLength = Math.pow(2, 9) - 1, protocols = ['websocket']) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
@@ -22,6 +24,11 @@ export default class Server extends EventEmitter {
         this.encoder = encoder;
         this.server = http.createServer();
         this.clients = new Map();
+        this.ping = ping;
+        this.options = {
+            maxLength,
+            protocols,
+        };
 
         this.server.on('error', this.onError);
         this.server.on('upgrade', this.onUpgrade);
@@ -69,8 +76,6 @@ export default class Server extends EventEmitter {
      * @param {Request} request
      * @param {Socket} socket
      * @param {Object} body
-     *
-     * @return {Boolean}
      */
     onUpgrade(request, socket, body) {
         if (!WebSocket.isWebSocket(request)) {
@@ -78,15 +83,12 @@ export default class Server extends EventEmitter {
         }
 
         const ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
-        const options = { maxLength: Math.pow(2, 9) - 1, protocols: ['websocket'] };
-        const driver = WebSocket.http(request, options);
+        const driver = WebSocket.http(request, this.options);
 
         driver.io.write(body);
         socket.pipe(driver.io).pipe(socket);
 
-        this.addClient(new Client(driver, ip, this.encoder));
-
-        return true;
+        this.addClient(new Client(driver, ip, this.encoder, this.ping * 1000));
     }
 
     /**
