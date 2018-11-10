@@ -3,21 +3,22 @@ import EventEmitter from 'events';
 import WebSocket from 'websocket-driver';
 import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
 import Client from 'netcode/src/server/Client';
+import Beacon from 'netcode/src/server/Beacon';
 
 export default class Server extends EventEmitter {
     /**
-     * @param {Number} port Port
-     * @param {String} host Host
-     * @param {JsonEncoder|BinaryEncoder} encoder
+     * @param {Number} port Port to listen on
+     * @param {String} host Host to listen on
+     * @param {JsonEncoder|BinaryEncoder} encoder Encoder to use to read/write event messages
      * @param {Number} ping Ping frequency in seconds (0 for no ping)
      * @param {Number} maxLength Paquet max length in bit
      * @param {Array} protocols Supported protocols
      */
-    constructor(port = 8080, host = 'localhost', encoder = new JsonEncoder(), ping = 0, maxLength = Math.pow(2, 9) - 1, protocols = ['websocket']) {
+    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxLength = Math.pow(2, 9), protocols = ['websocket']) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
-        //this.onRequest = this.onRequest.bind(this);
+        this.onRequest = this.onRequest.bind(this);
         this.onError = this.onError.bind(this);
         this.removeClient = this.removeClient.bind(this);
 
@@ -30,9 +31,9 @@ export default class Server extends EventEmitter {
             protocols,
         };
 
-        this.server.on('error', this.onError);
         this.server.on('upgrade', this.onUpgrade);
-        //this.server.on('request', this.onRequest);
+        this.server.on('request', this.onRequest);
+        this.server.on('error', this.onError);
 
         this.start(port, host);
     }
@@ -55,7 +56,7 @@ export default class Server extends EventEmitter {
      */
     addClient(client) {
         this.clients.set(client.id, client);
-        client.addListener('close', this.removeClient);
+        client.on('close', this.removeClient);
         this.emit('client:join', client);
     }
 
@@ -88,7 +89,11 @@ export default class Server extends EventEmitter {
         driver.io.write(body);
         socket.pipe(driver.io).pipe(socket);
 
-        this.addClient(new Client(driver, ip, this.encoder, this.ping * 1000));
+        if (this.ping) {
+            new Beacon(driver, this.ping);
+        }
+
+        this.addClient(new Client(driver, ip, this.encoder));
     }
 
     /**
@@ -97,19 +102,14 @@ export default class Server extends EventEmitter {
      * @param {Request} request
      * @param {Response} response
      */
-    /*onRequest(request, response) {
+    onRequest(request, response) {
         switch (request.url) {
-            case '/':
-                response.writeHead(200, { 'Content-Type': 'application/json' });
-                response.end(JSON.stringify(this.getStatus()));
-                break;
-
             default:
                 response.writeHead(404);
                 response.end();
                 break;
         }
-    }*/
+    }
 
     /**
      * On error

@@ -6,7 +6,7 @@ import Codec from './Codec';
  */
 export default class LongIntCodec extends Codec {
     /**
-     * @param {Number} byteLength}
+     * @param {Number} byteLength
      */
     constructor(byteLength) {
         super();
