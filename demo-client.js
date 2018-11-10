@@ -4,7 +4,6 @@ window.addEventListener('load', () => {
 
     // Register your events
     const encoder = new BinaryEncoder([
-        ['open', new Codec()],
         ['id', new Int16Codec()],
         ['ping', new LongIntCodec(6)],
         ['pong', new LongIntCodec(6)],
@@ -17,12 +16,12 @@ window.addEventListener('load', () => {
     let ping;
 
     // Listen for a "pong" event
-    client.addEventListener('pong', pong => {
+    client.on('pong', pong => {
         console.info('pong: %s ms', pong - ping);
     });
 
     // Listen for an "id" event
-    client.addEventListener('id', id => {
+    client.on('id', id => {
         console.log('connected with id %s', id);
         ping = Date.now();
 
@@ -31,7 +30,7 @@ window.addEventListener('load', () => {
     });
 
     // Listen for an "inverse" event
-    client.addEventListener('inverse', status => {
+    client.on('inverse', status => {
         // Answer with an "inverse" event
         client.send('inverse', !status);
         console.log('Inverse received: %s', status);
@@ -41,17 +40,19 @@ window.addEventListener('load', () => {
     });
 
     // Listen for a "greeting" event
-    client.addEventListener('greeting', message => {
+    client.on('greeting', message => {
         console.log('Servers geets you: "%s"', message);
     });
 
     // Listen for oppening connection
-    client.addEventListener('open', () => {
+    client.on('open', () => {
         console.info('Connection open.');
+
+        setTimeout(() => client.close(), 20 * 1000);
     });
 
     // Listen for connection close
-    client.addEventListener('close', () => {
+    client.on('close', () => {
         console.info('Connection closed.');
     });
 });

@@ -39,14 +39,13 @@ export default class Client extends EventEmitter {
      */
     close() {
         this.socket.close();
-        //this.onClose();
     }
 
     /**
      * On connexion open
      */
     onOpen() {
-        this.emit('open');
+        this.emit('open', this);
     }
 
     /**
@@ -68,7 +67,7 @@ export default class Client extends EventEmitter {
         this.socket.removeEventListener('close', this.onClose);
         this.socket.removeEventListener('error', this.onError);
         this.socket.removeEventListener('message', this.onMessage);
-        this.emit('close');
+        this.emit('close', this);
     }
 
     /**
@@ -77,6 +76,6 @@ export default class Client extends EventEmitter {
      * @param {Error} error
      */
     onError(error) {
-        this.emit('error', error);
+        this.emit('error', error, this);
     }
 }

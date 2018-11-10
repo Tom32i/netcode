@@ -7,6 +7,13 @@ export default class JsonEncoder {
     static get binaryType() { return 'blob'; }
 
     /**
+     * Reserved event names
+     *
+     * @return {String[]}
+     */
+    static get reservedEvents() { return ['open', 'close', 'error']; }
+
+    /**
      * Encode
      *
      * @param {String} name
@@ -15,6 +22,10 @@ export default class JsonEncoder {
      * @return {String}
      */
     encode(name, data) {
+        if (this.constructor.reservedEvents.includes(name)) {
+            throw new Error(`"${name}" is a reserved event name.`);
+        }
+
         return JSON.stringify({ name, data });
     }
 

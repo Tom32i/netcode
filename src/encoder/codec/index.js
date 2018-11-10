@@ -5,6 +5,7 @@ import Int16Codec from 'netcode/src/encoder/codec/Int16Codec';
 import Int32Codec from 'netcode/src/encoder/codec/Int32Codec';
 import LongIntCodec from 'netcode/src/encoder/codec/LongIntCodec';
 import StringCodec from 'netcode/src/encoder/codec/StringCodec';
+import LongStringCodec from 'netcode/src/encoder/codec/LongStringCodec';
 
 module.exports = {
     Codec,
@@ -14,4 +15,5 @@ module.exports = {
     Int32Codec,
     LongIntCodec,
     StringCodec,
+    LongStringCodec,
 };
