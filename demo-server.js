@@ -2,7 +2,6 @@ const { Server, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, St
 
 // Register your events
 const encoder = new BinaryEncoder([
-    ['open', new Codec()],
     ['id', new Int16Codec()],
     ['ping', new LongIntCodec(6)],
     ['pong', new LongIntCodec(6)],
@@ -14,11 +13,11 @@ const encoder = new BinaryEncoder([
 const server = new Server(process.argv[2], 'localhost', encoder);
 
 // Listen for new clients
-server.addListener('client:join', client => {
+server.on('client:join', client => {
     console.log('Client %s joined.', client.id);
 
     // Listen for "ping" event
-    client.addListener('ping', ping => {
+    client.on('ping', ping => {
         // Answer with a "pong" event
         client.send('pong', Date.now());
         console.log('Client %s ping received: %s.', client.id, ping);
@@ -28,12 +27,12 @@ server.addListener('client:join', client => {
     });
 
     // Listen for "inverse" event
-    client.addListener('inverse', status => {
+    client.on('inverse', status => {
         console.log('Client %s inverse received: %s.', client.id, status);
     });
 
     // Listen for "greeting" event
-    client.addListener('greeting', message => {
+    client.on('greeting', message => {
         console.log('Client %s geets you: "%s"', client.id, message);
         // Send a "greeting" event
         client.send('greeting', 'Hello, I\'m server!');
@@ -44,7 +43,7 @@ server.addListener('client:join', client => {
 });
 
 // Listen for disconnecting clients
-server.addListener('client:leave', client => {
+server.on('client:leave', client => {
     console.log('Client %s left.', client.id);
 });
 

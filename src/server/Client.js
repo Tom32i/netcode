@@ -7,29 +7,24 @@ export default class Client extends EventEmitter {
      * @param {WebSocket} socket
      * @param {String} ip
      * @param {Encoder} encoder
-     * @param {Number} pingFrequency Ping frequency in milliseconds
      */
-    constructor(socket, ip, encoder, pingFrequency = 0) {
+    constructor(socket, ip, encoder) {
         super();
 
         this.id = ++INDEX;
         this.ip = ip;
         this.socket = socket;
         this.encoder = encoder;
-        this.pingInterval = null;
 
+        this.onOpen = this.onOpen.bind(this);
         this.onMessage = this.onMessage.bind(this);
         this.onError = this.onError.bind(this);
         this.onClose = this.onClose.bind(this);
-        this.ping = this.ping.bind(this);
 
+        this.socket.on('open', this.onOpen);
         this.socket.on('message', this.onMessage);
         this.socket.on('error', this.onError);
         this.socket.on('close', this.onClose);
-
-        if (pingFrequency > 0) {
-            this.socket.on('open', () => this.startPing(pingFrequency));
-        }
 
         this.socket.send = this.encoder.constructor.binaryType === 'arraybuffer' ? this.socket.binary : this.socket.text;
 
@@ -56,30 +51,10 @@ export default class Client extends EventEmitter {
     }
 
     /**
-     * Start ping at given interval
-     *
-     * @param {Number} frequency Ping frequency in milliseconds
+     * On socket open
      */
-    startPing(frequency) {
-        if (frequency) {
-            this.pingInterval = setInterval(this.ping, frequency);
-        }
-    }
-
-    ping() {
-        if (this.socket) {
-            this.socket.ping();
-        }
-    }
-
-    /**
-     * Stop ping interval
-     */
-    stopPing() {
-        if (this.pingInterval) {
-            clearInterval(this.pingInterval);
-            this.pingInterval = null;
-        }
+    onOpen() {
+        this.emit('open', this);
     }
 
     /**
@@ -103,7 +78,8 @@ export default class Client extends EventEmitter {
      * @param {Event} event
      */
     onError(event) {
-        console.error(`Client ${this.id}: `, event.message);
+        console.error(`[ERROR] In socket for client ${this.id}: `, event.message);
+        this.emit('error', new Error(event.message), this);
         this.close();
     }
 
@@ -111,7 +87,6 @@ export default class Client extends EventEmitter {
      * On close
      */
     onClose() {
-        this.stopPing();
         this.socket = null;
         this.emit('close', this);
     }

@@ -9,6 +9,13 @@ export default class BinaryEncoder {
     static get binaryType() { return 'arraybuffer'; }
 
     /**
+     * Reserved event names
+     *
+     * @return {String[]}
+     */
+    static get reservedEvents() { return ['open', 'close', 'error']; }
+
+    /**
      * @param {Array} handlers
      */
     constructor(handlers, idCodec = new Int8Codec()) {
@@ -20,6 +27,10 @@ export default class BinaryEncoder {
         handlers.forEach(([name, handler], index) => {
             handler.id = index;
             handler.name = name;
+
+            if (this.constructor.reservedEvents.includes(name)) {
+                throw new Error(`"${name}" is a reserved event name.`);
+            }
         });
     }
 
