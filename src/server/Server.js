@@ -22,6 +22,8 @@ export default class Server extends EventEmitter {
         this.onError = this.onError.bind(this);
         this.removeClient = this.removeClient.bind(this);
 
+        this.port = port;
+        this.host = host;
         this.encoder = encoder;
         this.server = http.createServer();
         this.clients = new Map();
@@ -35,7 +37,7 @@ export default class Server extends EventEmitter {
         this.server.on('request', this.onRequest);
         this.server.on('error', this.onError);
 
-        this.start(port, host);
+        this.start();
     }
 
     /**
@@ -44,8 +46,8 @@ export default class Server extends EventEmitter {
      * @param {Number} port
      * @param {String} host
      */
-    start(port, host) {
-        this.server.listen(port, host);
+    start() {
+        this.server.listen(this.port, this.host);
         this.emit('ready');
     }
 
