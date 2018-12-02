@@ -19,7 +19,11 @@ export default class StringCodec extends Codec {
 
         view.setUint8(0, data.length);
 
-        Array.from(data).forEach((letter, index) => view.setUint16(1 + (index * 2), letter.charCodeAt(0)));
+        const { length } = data;
+
+        for (var index = 0; index < length; index++) {
+            view.setUint16(1 + (index * 2), data[index].charCodeAt(0))
+        }
     }
 
     /**
@@ -28,7 +32,12 @@ export default class StringCodec extends Codec {
     decode(buffer, offset) {
         const view = new DataView(buffer, offset);
         const length = view.getUint8(0);
+        const chars = new Array(length);
 
-        return new Array(length).fill(null).map((value, index) => String.fromCharCode(view.getUint16(1 + index * 2))).join('');
+        for (var index = 0; index < length; index++) {
+            chars[index] = view.getUint16(1 + index * 2);
+        }
+
+        return String.fromCharCode(...chars);
     }
 }
