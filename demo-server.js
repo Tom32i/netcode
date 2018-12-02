@@ -35,7 +35,7 @@ server.on('client:join', client => {
     client.on('greeting', message => {
         console.log('Client %s geets you: "%s"', client.id, message);
         // Send a "greeting" event
-        client.send('greeting', 'Hello, I\'m server!');
+        client.send('greeting', 'Hello, I\'m server 😊!');
     });
 
     // Send event "id" to the client

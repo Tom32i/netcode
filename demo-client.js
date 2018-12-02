@@ -36,7 +36,7 @@ window.addEventListener('load', () => {
         console.log('Inverse received: %s', status);
 
         // Send a "greeting" event
-        client.send('greeting', 'Hello, I\'m client!');
+        client.send('greeting', 'Hello, I\'m client 😊!');
     });
 
     // Listen for a "greeting" event
