@@ -1,7 +1,5 @@
 import EventEmitter from 'events';
 
-let INDEX = 0;
-
 export default class Client extends EventEmitter {
     /**
      * @param {WebSocket} socket
@@ -11,7 +9,7 @@ export default class Client extends EventEmitter {
     constructor(socket, ip, encoder) {
         super();
 
-        this.id = ++INDEX;
+        this.id = null;
         this.ip = ip;
         this.socket = socket;
         this.encoder = encoder;
@@ -29,6 +27,15 @@ export default class Client extends EventEmitter {
         this.socket.send = this.encoder.constructor.binaryType === 'arraybuffer' ? this.socket.binary : this.socket.text;
 
         this.socket.start();
+    }
+
+    /**
+     * Set id
+     *
+     * @param {Number|String} id
+     */
+    setId(id) {
+        this.id = id;
     }
 
     /**
