@@ -16,10 +16,9 @@ export default class StringCodec extends Codec {
      */
     encode(buffer, offset, data) {
         const view = new DataView(buffer, offset, this.getByteLength(data));
-
-        view.setUint8(0, data.length);
-
         const { length } = data;
+
+        view.setUint8(0, length);
 
         for (var index = 0; index < length; index++) {
             view.setUint16(1 + (index * 2), data[index].charCodeAt(0));
