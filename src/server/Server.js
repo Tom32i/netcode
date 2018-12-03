@@ -2,6 +2,7 @@ import http from 'http';
 import EventEmitter from 'events';
 import WebSocket from 'websocket-driver';
 import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
+import MapClientDirectory from 'netcode/src/server/MapClientDirectory';
 import Client from 'netcode/src/server/Client';
 import Beacon from 'netcode/src/server/Beacon';
 
@@ -13,8 +14,9 @@ export default class Server extends EventEmitter {
      * @param {Number} ping Ping frequency in seconds (0 for no ping)
      * @param {Number} maxLength Paquet max length in bit
      * @param {Array} protocols Supported protocols
+     * @param {ClientDirectory} clients Clients directory
      */
-    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxLength = Math.pow(2, 9), protocols = ['websocket']) {
+    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxLength = Math.pow(2, 9), protocols = ['websocket'], clients = new MapClientDirectory()) {
         super();
 
         this.onUpgrade = this.onUpgrade.bind(this);
@@ -26,7 +28,7 @@ export default class Server extends EventEmitter {
         this.host = host;
         this.encoder = encoder;
         this.server = http.createServer();
-        this.clients = new Map();
+        this.clients = clients;
         this.ping = ping;
         this.options = {
             maxLength,
@@ -57,7 +59,7 @@ export default class Server extends EventEmitter {
      * @param {Client} client
      */
     addClient(client) {
-        this.clients.set(client.id, client);
+        this.clients.add(client);
         client.on('close', this.removeClient);
         this.emit('client:join', client);
     }
@@ -69,7 +71,7 @@ export default class Server extends EventEmitter {
      */
     removeClient(client) {
         client.removeListener('close', this.removeClient);
-        this.clients.delete(client.id);
+        this.clients.remove(client);
         this.emit('client:leave', client);
     }
 

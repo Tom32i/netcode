@@ -22,7 +22,7 @@ export default class StringCodec extends Codec {
         const { length } = data;
 
         for (var index = 0; index < length; index++) {
-            view.setUint16(1 + (index * 2), data[index].charCodeAt(0))
+            view.setUint16(1 + (index * 2), data[index].charCodeAt(0));
         }
     }
 
