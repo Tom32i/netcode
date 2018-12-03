@@ -1,6 +1,6 @@
 {
   "name": "netcode",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "NetCode for web video games",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
