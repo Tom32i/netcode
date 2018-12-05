@@ -1,4 +1,4 @@
-const { Server, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = require('./server');
+const { Server, BinaryEncoder, Codec, Int8Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = require('./server');
 
 // Register your events
 const encoder = new BinaryEncoder([
@@ -7,6 +7,7 @@ const encoder = new BinaryEncoder([
     ['pong', new LongIntCodec(6)],
     ['inverse', new BooleanCodec()],
     ['greeting', new StringCodec()],
+    ['total', new Int8Codec()],
 ]);
 
 // Create the server
@@ -40,6 +41,10 @@ server.on('client:join', client => {
 
     // Send event "id" to the client
     client.send('id', client.id);
+
+    if (server.clients.length > 1) {
+        server.clients.forEach(client => client.send('total', server.clients.length));
+    }
 });
 
 // Listen for disconnecting clients
