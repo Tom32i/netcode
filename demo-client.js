@@ -1,6 +1,6 @@
 
 window.addEventListener('load', () => {
-    const { Client, BinaryEncoder, Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = netcode;
+    const { Client, BinaryEncoder, Codec, Int8Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = netcode;
 
     // Register your events
     const encoder = new BinaryEncoder([
@@ -9,6 +9,7 @@ window.addEventListener('load', () => {
         ['pong', new LongIntCodec(6)],
         ['inverse', new BooleanCodec()],
         ['greeting', new StringCodec()],
+        ['total', new Int8Codec()],
     ]);
 
     // Create the client
@@ -27,6 +28,11 @@ window.addEventListener('load', () => {
 
         // Send a "ping" event
         client.send('ping', ping);
+    });
+
+    // Listen for a "total" event
+    client.on('total', total => {
+        console.log(`There is ${total} people connected.`)
     });
 
     // Listen for an "inverse" event
