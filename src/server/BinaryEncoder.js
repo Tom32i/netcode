@@ -8,7 +8,7 @@ export default class BinaryEncoder extends BaseBinaryEncoder {
      * {@inheritdoc}
      */
     encode(name, data) {
-        return new Buffer.from(super.encode(name, data));
+        return Buffer.from(super.encode(name, data));
     }
 
     /**
