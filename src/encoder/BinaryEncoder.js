@@ -40,7 +40,7 @@ export default class BinaryEncoder {
      * @param {String} name
      * @param {Object|Number|Boolean|String|null} data
      *
-     * @return {String}
+     * @return {ArrayBuffer}
      */
     encode(name, data) {
         const handler = this.handlersByName.get(name);
@@ -61,7 +61,7 @@ export default class BinaryEncoder {
     /**
      * Decode event
      *
-     * @param {Buffer} buffer
+     * @param {ArrayBuffer} buffer
      *
      * @return {Object}
      */

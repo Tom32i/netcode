@@ -90,6 +90,11 @@ export default class Server extends EventEmitter {
         const ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
         const driver = WebSocket.http(request, this.options);
 
+        socket.on('error', () => {
+            driver.close();
+            socket.end();
+        });
+
         driver.io.write(body);
         socket.pipe(driver.io).pipe(socket);
 
