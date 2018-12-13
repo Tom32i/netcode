@@ -7,7 +7,7 @@ import LongIntCodec from 'netcode/src/encoder/codec/LongIntCodec';
 import StringCodec from 'netcode/src/encoder/codec/StringCodec';
 import LongStringCodec from 'netcode/src/encoder/codec/LongStringCodec';
 
-module.exports = {
+export {
     Codec,
     BooleanCodec,
     Int8Codec,

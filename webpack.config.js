@@ -1,16 +1,3 @@
-const rules = [
-  {
-    test: /\.js$/,
-    exclude: /node_modules/,
-    use: {
-      loader: 'babel-loader',
-      options: {
-        presets: ['babel-preset-env']
-      }
-    }
-  }
-];
-
 const resolve = {
   alias: {
     'netcode': `${__dirname}/`,
@@ -26,7 +13,18 @@ const clientConfig = {
     library: 'netcode',
     libraryTarget: 'umd'
   },
-  module: { rules },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: { presets: ['@babel/preset-env'] }
+        }
+      }
+    ]
+  },
   resolve,
 };
 
@@ -39,7 +37,18 @@ const serverConfig = {
     library: 'netcode',
     libraryTarget: 'umd'
   },
-  module: { rules },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: { presets: [[ '@babel/preset-env', { targets: { node: true } } ]] }
+        }
+      }
+    ]
+  },
   resolve,
 };
 
