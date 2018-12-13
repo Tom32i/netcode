@@ -10,7 +10,7 @@ import BooleanCodec from 'netcode/src/encoder/codec/BooleanCodec';
 import StringCodec from 'netcode/src/encoder/codec/StringCodec';
 import LongStringCodec from 'netcode/src/encoder/codec/LongStringCodec';
 
-module.exports = {
+export {
     Server,
     JsonEncoder,
     BinaryEncoder,
