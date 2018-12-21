@@ -8,7 +8,7 @@ export default class StringCodec extends Codec {
      * @type {Number}
      */
     getByteLength(data) {
-        return 1 + data.length * 2;
+        return 1 + (data || '').length * 2;
     }
 
     /**
@@ -16,7 +16,7 @@ export default class StringCodec extends Codec {
      */
     encode(buffer, offset, data) {
         const view = new DataView(buffer, offset, this.getByteLength(data));
-        const { length } = data;
+        const { length } = (data || '');
 
         view.setUint8(0, length);
 
