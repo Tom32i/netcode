@@ -8,7 +8,7 @@ export default class LongStringCodec extends Codec {
      * @type {Number}
      */
     getByteLength(data) {
-        return 2 + data.length * 2;
+        return 2 + (data || '').length * 2;
     }
 
     /**
@@ -16,7 +16,7 @@ export default class LongStringCodec extends Codec {
      */
     encode(buffer, offset, data) {
         const view = new DataView(buffer, offset, this.getByteLength(data));
-        const { length } = data;
+        const { length } = (data || '');
 
         view.setUint16(0, length);
 
