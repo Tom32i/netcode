@@ -14,19 +14,24 @@ export default class Client extends EventEmitter {
         this.socket = socket;
         this.encoder = encoder;
 
+        if (this.encoder.constructor.binaryType) {
+            this.socket.binaryType = this.encoder.constructor.binaryType;
+        }
+
         this.onOpen = this.onOpen.bind(this);
         this.onMessage = this.onMessage.bind(this);
         this.onError = this.onError.bind(this);
         this.onClose = this.onClose.bind(this);
 
-        this.socket.on('open', this.onOpen);
-        this.socket.on('message', this.onMessage);
-        this.socket.on('error', this.onError);
-        this.socket.on('close', this.onClose);
+        this.socket.addEventListener('message', this.onMessage);
+        this.socket.addEventListener('error', this.onError);
+        this.socket.addEventListener('close', this.onClose);
 
-        this.socket.send = this.encoder.constructor.binaryType === 'arraybuffer' ? this.socket.binary : this.socket.text;
-
-        this.socket.start();
+        if (socket.readyState < 1) {
+            this.socket.addEventListener('open', this.onOpen);
+        } else {
+            this.onOpen();
+        }
     }
 
     /**

@@ -4,7 +4,7 @@ export default class JsonEncoder {
      *
      * @return {String}
      */
-    static get binaryType() { return 'blob'; }
+    static get binaryType() { return null; }
 
     /**
      * Reserved event names
