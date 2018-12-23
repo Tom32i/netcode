@@ -11,7 +11,7 @@ const encoder = new BinaryEncoder([
 ]);
 
 // Create the server
-const server = new Server(process.argv[2], 'localhost', encoder);
+const server = new Server(process.argv[2], 'localhost', encoder, 10);
 
 // Listen for new clients
 server.on('client:join', client => {

@@ -1,6 +1,6 @@
 import Client from 'netcode/src/client/Client';
-import BinaryEncoder from 'netcode/src/client/BinaryEncoder';
 import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
+import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
 import Codec from 'netcode/src/encoder/codec/Codec';
 import Int8Codec from 'netcode/src/encoder/codec/Int8Codec';
 import Int16Codec from 'netcode/src/encoder/codec/Int16Codec';
