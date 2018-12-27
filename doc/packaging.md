@@ -62,7 +62,7 @@ Now you can import source file from _netcode_ directly in your sources and it wi
 ```javascript
 // src/server.js
 import Server from 'netcode/src/server/Server';
-import BinaryEncoder from 'netcode/src/server/BinaryEncoder'; // Import from src/server!
+import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
 import { BooleanCodec } from 'netcode/src/encoder/codec';
 
 new Server(
@@ -77,7 +77,7 @@ new Server(
 ```javascript
 // src/client.js
 import Client from 'netcode/src/client/Client';
-import BinaryEncoder from 'netcode/src/client/BinaryEncoder'; // Import from src/client!
+import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
 import { BooleanCodec } from 'netcode/src/encoder/codec';
 
 new Client(

@@ -1,4 +1,3 @@
-
 window.addEventListener('load', () => {
     const { Client, BinaryEncoder, Codec, Int8Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = netcode;
 
