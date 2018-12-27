@@ -1,6 +1,6 @@
 import http from 'http';
 import EventEmitter from 'events';
-import WebSocket from 'websocket-driver';
+import WebSocket from 'ws';
 import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
 import MapClientDirectory from 'netcode/src/server/MapClientDirectory';
 import Client from 'netcode/src/server/Client';
@@ -12,32 +12,28 @@ export default class Server extends EventEmitter {
      * @param {String} host Host to listen on
      * @param {JsonEncoder|BinaryEncoder} encoder Encoder to use to read/write event messages
      * @param {Number} ping Ping frequency in seconds (0 for no ping)
-     * @param {Number} maxLength Paquet max length in bit
-     * @param {Array} protocols Supported protocols
+     * @param {Number} maxPayload Paquet max length in bit
      * @param {ClientDirectory} clients Clients directory
      */
-    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxLength = Math.pow(2, 9), protocols = ['websocket'], clients = new MapClientDirectory()) {
+    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxPayload = Math.pow(2, 9), clients = new MapClientDirectory()) {
         super();
 
-        this.onUpgrade = this.onUpgrade.bind(this);
         this.onRequest = this.onRequest.bind(this);
         this.onError = this.onError.bind(this);
+        this.onConnection = this.onConnection.bind(this);
         this.removeClient = this.removeClient.bind(this);
 
         this.port = port;
         this.host = host;
         this.encoder = encoder;
         this.server = http.createServer();
+        this.socket = new WebSocket.Server({ server: this.server, maxPayload });
         this.clients = clients;
         this.ping = ping;
-        this.options = {
-            maxLength,
-            protocols,
-        };
 
-        this.server.on('upgrade', this.onUpgrade);
         this.server.on('request', this.onRequest);
         this.server.on('error', this.onError);
+        this.socket.on('connection', this.onConnection);
 
         this.start();
     }
@@ -76,33 +72,19 @@ export default class Server extends EventEmitter {
     }
 
     /**
-     * On HTTP WebSocket upgrade request
+     * On Socket connection
      *
+     * @param {Websocket} socket
      * @param {Request} request
-     * @param {Socket} socket
-     * @param {Object} body
      */
-    onUpgrade(request, socket, body) {
-        if (!WebSocket.isWebSocket(request)) {
-            return socket.end();
-        }
+    onConnection(socket, request) {
+        const ip = request.headers['x-real-ip'] || request.headers['x-forwarded-for'] || request.connection.remoteAddress;
 
-        const ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
-        const driver = WebSocket.http(request, this.options);
-
-        socket.on('error', () => {
-            driver.close();
-            socket.end();
-        });
-
-        driver.io.write(body);
-        socket.pipe(driver.io).pipe(socket);
+        this.addClient(new Client(socket, ip, this.encoder));
 
         if (this.ping) {
-            new Beacon(driver, this.ping);
+            new Beacon(socket, this.ping);
         }
-
-        this.addClient(new Client(driver, ip, this.encoder));
     }
 
     /**

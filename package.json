@@ -1,6 +1,6 @@
 {
   "name": "netcode",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "description": "NetCode for web video games",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "tom32i-event-emitter.js": "^2.0.1",
-    "websocket-driver": "^0.7.0"
+    "ws": "^6.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.2.0",
@@ -35,5 +35,9 @@
     "mocha": "^5.2.0",
     "webpack": "^4.27.0",
     "webpack-cli": "^3.1.2"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
   }
 }
