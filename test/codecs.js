@@ -1,12 +1,12 @@
 const assert = require('assert');
 const {
-    Int8Codec,
-    Int16Codec,
-    Int32Codec,
-    BooleanCodec,
-    LongIntCodec,
-    StringCodec,
-    LongStringCodec,
+  Int8Codec,
+  Int16Codec,
+  Int32Codec,
+  BooleanCodec,
+  LongIntCodec,
+  StringCodec,
+  LongStringCodec,
 } = require('../server');
 
 describe('Int8Codec', () => {
