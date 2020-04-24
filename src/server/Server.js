@@ -18,6 +18,7 @@ export default class Server extends EventEmitter {
     constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxPayload = Math.pow(2, 9), clients = new MapClientDirectory(), autoStart = true) {
         super();
 
+        this.start = this.start.bind(this);
         this.onRequest = this.onRequest.bind(this);
         this.onError = this.onError.bind(this);
         this.onConnection = this.onConnection.bind(this);
