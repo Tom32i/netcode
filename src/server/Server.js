@@ -15,7 +15,7 @@ export default class Server extends EventEmitter {
      * @param {Number} maxPayload Paquet max length in bit
      * @param {ClientDirectory} clients Clients directory
      */
-    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxPayload = Math.pow(2, 9), clients = new MapClientDirectory()) {
+    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxPayload = Math.pow(2, 9), clients = new MapClientDirectory(), autoStart = true) {
         super();
 
         this.onRequest = this.onRequest.bind(this);
@@ -35,7 +35,18 @@ export default class Server extends EventEmitter {
         this.server.on('error', this.onError);
         this.socket.on('connection', this.onConnection);
 
-        this.start();
+        if (autoStart) {
+            this.start();
+        }
+    }
+
+    /**
+     * Generate a new unique id
+     *
+     * @return {Number|String}
+     */
+    generateId() {
+        return this.clients.generateId();
     }
 
     /**
@@ -53,11 +64,13 @@ export default class Server extends EventEmitter {
      * Adds a new client
      *
      * @param {Client} client
+     * @param {Request} request
      */
-    addClient(client) {
+    addClient(client, request) {
+        client.setId(this.generateId());
         this.clients.add(client);
         client.on('close', this.removeClient);
-        this.emit('client:join', client);
+        this.emit('client:join', client, request);
     }
 
     /**
@@ -80,7 +93,10 @@ export default class Server extends EventEmitter {
     onConnection(socket, request) {
         const ip = request.headers['x-real-ip'] || request.headers['x-forwarded-for'] || request.connection.remoteAddress;
 
-        this.addClient(new Client(socket, ip, this.encoder));
+        this.addClient(
+            new Client(socket, ip, this.encoder),
+            request
+        );
 
         if (this.ping) {
             new Beacon(socket, this.ping);
