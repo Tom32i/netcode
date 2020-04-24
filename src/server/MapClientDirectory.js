@@ -38,7 +38,10 @@ export default class MapClientDirectory {
      * @param {Client} client
      */
     add(client) {
-        client.setId(this.generateId());
+        if (!client.id) {
+            client.id = this.generateId();
+        }
+
         this.clients.set(client.id, client);
     }
 
