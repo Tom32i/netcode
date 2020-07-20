@@ -13,9 +13,6 @@ watch:
 build:
 	npx webpack --mode=production
 
-# Launch demo
-start: demo-client demo-server
-
 # Launch demo client
 demo-client:
 	php -S 0.0.0.0:8000 -t .

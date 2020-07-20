@@ -1,7 +1,18 @@
 {
   "name": "netcode",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "NetCode for web video games",
+  "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
+  "license": "MIT",
+  "homepage": "https://github.com/Tom32i/netcode",
+  "keywords": [
+    "netcode",
+    "websocket",
+    "realtime",
+    "game",
+    "videogame",
+    "multiplayer"
+  ],
   "scripts": {
     "watch": "webpack --watch --mode=development",
     "build": "webpack --mode=production",
@@ -11,23 +22,13 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "keywords": [
-    "netcode",
-    "websocket",
-    "realtime",
-    "game",
-    "videogame",
-    "multiplayer"
-  ],
   "files": [
     "src/*",
     "client.js",
     "server.js"
   ],
-  "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
-  "license": "MIT",
   "dependencies": {
-    "tom32i-event-emitter.js": "^2.0.1",
+    "tom32i-event-emitter.js": "^2.0.3",
     "ws": "^7.3.1"
   },
   "devDependencies": {
