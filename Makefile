@@ -29,7 +29,7 @@ lint:
 	./node_modules/.bin/eslint src/* --ext .js,.json --fix
 
 # Test
-test:
+test: build
 	node_modules/.bin/mocha
 
 # Publish package
