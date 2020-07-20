@@ -7,11 +7,11 @@ install:
 
 # Launch watch
 watch:
-	./node_modules/.bin/webpack --watch --mode=development
+	npx webpack --watch --mode=development
 
 # Build lib
 build:
-	./node_modules/.bin/webpack --mode=production
+	npx webpack --mode=production
 
 # Launch demo
 start: demo-client demo-server
@@ -26,11 +26,11 @@ demo-server:
 
 # Lint and code style fix
 lint:
-	./node_modules/.bin/eslint src/* --ext .js,.json --fix
+	npx eslint src/* --ext .js,.json --fix
 
 # Test
-test: build
-	node_modules/.bin/mocha
+test:
+	npx mocha
 
 # Publish package
 publish: build
