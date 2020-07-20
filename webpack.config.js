@@ -9,7 +9,7 @@ const clientConfig = {
   entry: './src/client/index.js',
   output: {
     filename: 'client.js',
-    path: `${__dirname}`,
+    path: __dirname,
     library: 'netcode',
     libraryTarget: 'umd'
   },
