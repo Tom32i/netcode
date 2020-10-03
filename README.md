@@ -8,7 +8,6 @@ Features:
 - ⚡️ Handle the binary encoding and decoding of your data, with performances in mind.
 - 📢 Listen for event dispatched over websocket with simple `on`/`off` event emitter system.
 - 💬 Fallback to JSON for easy debugging.
-- 🗜[COMMING SOON] set a tick-rate and group events for lesser data consumption.
 
 ## Requirements
 
