@@ -26,7 +26,7 @@ Some of your events will certainly have more complex data structure that just on
 Your custom codec must extends the `Codec` class of Netcode and implement the 3 following methods:
 
 - `getByteLength(data)`: return the number of byte in the event for the given data (your event byte length may vary over the data, like for abitrary strings for example).
-- `encoder(buffer, offset, data)` encode the given data into the provided buffer, starting at the given offset (in byte).
+- `encode(buffer, offset, data)` encode the given data into the provided buffer, starting at the given offset (in byte).
 - `decode(buffer, offset)`: read and return the data contained in the provided buffer, starting at the given offset.
 
 Let's say we want to send an event with the given format:
@@ -40,11 +40,61 @@ For this example, I'm gonna chose to encode:
 -  The player ID as an unsigned integer on 1 byte (UInt8)
 - The x and y position on 2 byte each (Uint16)
 
-So the byte length of my event is fixed: 1 + 2 + 2 = 5 bytes. Let implement the `getByteLengthMethod`
+So the byte length of my event is fixed: 1 + 2 + 2 = 5 bytes.
 
-```
-getByteLength() {
-    return Uint8Array.BYTES_PER_ELEMENT + Uint16Array.BYTES_PER_ELEMENT * 2;
+Full working example using composition:
+
+```javascript
+import { Codec, Int8Codec, Int16Codec } from 'netcode/src/encoder/codec';
+
+export default class PositionCodec extends Codec {
+    constructor() {
+        super();
+
+        this.int8Codec = new Int8Codec();
+        this.int16Codec = new Int16Codec();
+    }
+
+    /**
+     * @type {Number}
+     */
+    getByteLength() {
+        return this.int8Codec.getByteLength() + this.int16Codec.getByteLength() * 2;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    encode(buffer, offset, data) {
+        const { id, x, y } = data;
+
+        this.int8Codec.encode(buffer, offset, id);
+
+        offset += this.int8Codec.getByteLength();
+
+        this.int16Codec.encode(buffer, offset, x);
+
+        offset += this.int16Codec.getByteLength();
+
+        this.int16Codec.encode(buffer, offset, y);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    decode(buffer, offset) {
+        const id = this.int8Codec.decode(buffer, offset);
+
+        offset += this.int8Codec.getByteLength();
+
+        const duration = this.int16Codec.decode(buffer, offset);
+
+        offset += this.int16Codec.getByteLength();
+
+        const position = this.int8Codec.decode(buffer, offset);
+
+        return { id, x, y };
+    }
 }
 ```
 

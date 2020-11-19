@@ -55,7 +55,7 @@ Here we use a BinaryEncoder to communicate in binary over websocket, with the pr
 ```javascript
 import Server from 'netcode/src/server/Server';
 import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
-import events from './envents';
+import events from './events';
 
 // Listen on localhost:8080
 const server = new Server(8080, 'localhost', new BinaryEncoder(events));
@@ -77,7 +77,7 @@ Now we write a client, for the browser, that connects to our running server on `
 ```javascript
 import Client from 'netcode/src/client/Client';
 import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
-import events from './envents';
+import events from './events';
 
 const client = new Client('ws://localhost:8080', new BinaryEncoder(events))
 
