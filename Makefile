@@ -26,7 +26,7 @@ lint:
 	npx eslint src/* --ext .js,.json --fix
 
 # Test
-test:
+test: build
 	npx mocha
 
 # Publish package
