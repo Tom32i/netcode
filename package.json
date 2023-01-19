@@ -1,6 +1,6 @@
 {
   "name": "netcode",
-  "version": "2.0.5",
+  "version": "2.1.1",
   "description": "NetCode for web video games",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
@@ -29,19 +29,19 @@
   ],
   "dependencies": {
     "tom32i-event-emitter.js": "^2.0.5",
-    "ws": "^7.4.5"
+    "ws": "^8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.0",
     "babel-loader": "^8.2.2",
     "eslint": "^7.26.0",
-    "mocha": "^8.4.0",
+    "mocha": "^10.2.0",
     "webpack": "^5.36.0",
     "webpack-cli": "^4.6.0"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.1",
-    "utf-8-validate": "^5.0.2"
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^5.0.10"
   }
 }

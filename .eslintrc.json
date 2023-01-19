@@ -1,12 +1,12 @@
 {
     "env": {
         "browser": true,
-        "es6": true,
+        "es2021": true,
         "node": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 2017,
+        "ecmaVersion": "latest",
         "sourceType": "module"
     },
     "rules": {
@@ -30,6 +30,10 @@
         "no-console": [
             "error",
             { "allow": ["info", "error"] }
+        ],
+        "spaced-comment": [
+            "error",
+            "always"
         ]
     }
 }

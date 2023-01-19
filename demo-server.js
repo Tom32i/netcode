@@ -12,7 +12,7 @@ const encoder = new BinaryEncoder([
 
 // Create the server
 const port = process.argv[2];
-const server = new Server(port, 'localhost', encoder, 10);
+const server = new Server(port, '127.0.0.1', encoder, 3);
 
 // Listen for new clients
 server.on('client:join', client => {
@@ -43,14 +43,20 @@ server.on('client:join', client => {
     // Send event "id" to the client
     client.send('id', client.id);
 
-    if (server.clients.length > 1) {
-        server.clients.forEach(client => client.send('total', server.clients.length));
-    }
+    broadcastTotal();
 });
 
 // Listen for disconnecting clients
 server.on('client:leave', client => {
     console.log('Client %s left.', client.id);
+    broadcastTotal();
 });
+
+server.on('ready', () => console.log('Listening on port %s', port));
+
+function broadcastTotal() {
+    const { length } = server.clients;
+    server.clients.forEach(client => client.send('total', length));
+}
 
 module.exports = server;

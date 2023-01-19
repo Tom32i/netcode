@@ -12,16 +12,16 @@ window.addEventListener('load', () => {
     ]);
 
     // Create the client
-    const client = new Client('ws://localhost:8002', encoder);
+    const client = new Client('ws://127.0.0.1:8002', encoder);
     let ping;
 
     // Listen for a "pong" event
-    client.on('pong', pong => {
+    client.on('pong', ({ detail: pong }) => {
         console.info('pong: %s ms', pong - ping);
     });
 
     // Listen for an "id" event
-    client.on('id', id => {
+    client.on('id', ({ detail: id }) => {
         console.log('connected with id %s', id);
         ping = Date.now();
 
@@ -30,12 +30,12 @@ window.addEventListener('load', () => {
     });
 
     // Listen for a "total" event
-    client.on('total', total => {
+    client.on('total', ({ detail: total }) => {
         console.log(`There is ${total} people connected.`)
     });
 
     // Listen for an "inverse" event
-    client.on('inverse', status => {
+    client.on('inverse', ({ detail: status }) => {
         // Answer with an "inverse" event
         client.send('inverse', !status);
         console.log('Inverse received: %s', status);
@@ -45,7 +45,7 @@ window.addEventListener('load', () => {
     });
 
     // Listen for a "greeting" event
-    client.on('greeting', message => {
+    client.on('greeting', ({ detail: message }) => {
         console.log('Servers geets you: "%s"', message);
     });
 

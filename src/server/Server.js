@@ -1,6 +1,6 @@
 import http from 'http';
 import EventEmitter from 'events';
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
 import MapClientDirectory from 'netcode/src/server/MapClientDirectory';
 import Client from 'netcode/src/server/Client';
@@ -22,19 +22,25 @@ export default class Server extends EventEmitter {
         this.onRequest = this.onRequest.bind(this);
         this.onError = this.onError.bind(this);
         this.onConnection = this.onConnection.bind(this);
+        this.onListening = this.onListening.bind(this);
         this.removeClient = this.removeClient.bind(this);
 
         this.port = port;
         this.host = host;
         this.encoder = encoder;
         this.server = http.createServer();
-        this.socket = new WebSocket.Server({ server: this.server, maxPayload });
+        this.socket = new WebSocketServer({
+            server: this.server,
+            maxPayload
+        });
         this.clients = clients;
         this.ping = ping;
 
         this.server.on('request', this.onRequest);
         this.server.on('error', this.onError);
+
         this.socket.on('connection', this.onConnection);
+        this.socket.on('listening', this.onListening);
 
         if (autoStart) {
             this.start();
@@ -58,7 +64,6 @@ export default class Server extends EventEmitter {
      */
     start() {
         this.server.listen(this.port, this.host);
-        this.emit('ready');
     }
 
     /**
@@ -83,6 +88,13 @@ export default class Server extends EventEmitter {
         client.removeListener('close', this.removeClient);
         this.clients.remove(client);
         this.emit('client:leave', client);
+    }
+
+    /**
+     * Underlying server is ready
+     */
+    onListening() {
+        this.emit('ready');
     }
 
     /**
