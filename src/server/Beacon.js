@@ -18,13 +18,13 @@ export default class Beacon {
         this.onPing = this.onPing.bind(this);
         this.onPong = this.onPong.bind(this);
 
-        this.socket.addEventListener('pong', this.onPong);
-        this.socket.addEventListener('close', this.stop);
+        this.socket.on('pong', this.onPong);
+        this.socket.on('close', this.stop);
 
         if (this.socket.readyState === 1) {
             this.start();
         } else {
-            this.socket.addEventListener('open', this.start);
+            this.socket.on('open', this.start);
         }
     }
 
@@ -63,7 +63,6 @@ export default class Beacon {
      * On ping
      */
     onPing() {
-
     }
 
     /**
