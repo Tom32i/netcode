@@ -8,21 +8,42 @@ export default class StringCodec extends Codec {
      * @type {Number}
      */
     getByteLength(data) {
-        return 1 + (data || '').length * 2;
+        return 1 + this.getStrByteLength(data);
+    }
+
+    getStrByteLength(data) {
+        const { length } = (data || '');
+        const byteLength = 0;
+
+        for (var index = 0; index < length; index++) {
+            byteLength += data[index].charCodeAt(0) > 0x7ff ? 2 : 1;
+        }
+
+        return byteLength;
     }
 
     /**
      * {@inheritdoc}
      */
     encode(buffer, offset, data) {
-        const view = new DataView(buffer, offset, this.getByteLength(data));
+        const view = new DataView(buffer, offset);
         const { length } = (data || '');
-
-        view.setUint8(0, length);
+        const cursor = 1;
 
         for (var index = 0; index < length; index++) {
-            view.setUint16(1 + (index * 2), data[index].charCodeAt(0));
+            const code = data[index].charCodeAt(0)
+            if (code > 0x7ff) {
+                console.log('2octet:', index, data[index], code);
+                view.setUint16(cursor, code);
+                cursor += 2;
+            } else {
+                console.log('1octet:', index, data[index], code);
+                view.setUint8(cursor, code);
+                cursor += 1;
+            }
         }
+
+        view.setUint8(0, cursor - 1);
     }
 
     /**
