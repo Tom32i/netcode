@@ -87,11 +87,11 @@ export default class PositionCodec extends Codec {
 
         offset += this.int8Codec.getByteLength();
 
-        const duration = this.int16Codec.decode(buffer, offset);
+        const x = this.int16Codec.decode(buffer, offset);
 
         offset += this.int16Codec.getByteLength();
 
-        const position = this.int8Codec.decode(buffer, offset);
+        const y = this.int8Codec.decode(buffer, offset);
 
         return { id, x, y };
     }
