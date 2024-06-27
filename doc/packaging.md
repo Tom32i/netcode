@@ -13,7 +13,7 @@ On the server-side (node):
 const {
     Server,
     BinaryEncoder,
-    Int16Codec,
+    UInt16Codec,
     BooleanCodec,
     StringCodec,
     // ...
@@ -30,7 +30,7 @@ And in the browser as well:
         const {
             Client,
             BinaryEncoder,
-            Int16Codec,
+            UInt16Codec,
             BooleanCodec,
             StringCodec,
             // ...

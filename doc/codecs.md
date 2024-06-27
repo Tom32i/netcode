@@ -13,11 +13,11 @@ Packaged codecs are available in the `netcode/server` and `netcode/client` packa
 | `Codec`                    | No data (just send the event name) | `['pause', new Codec()]`<br />`send('pause')`                | 0                       |
 | `BooleanCodec`             | `true\|false`                       | `['active', new BooleanCodec()]`<br />`send('active', true)` | 1                       |
 | `StringCodec`              | String up to 255 characters        | `['player:name', new StringCodec()]`<br />`send('player:name', 'DarkShadow73')` | 1 + (String length * 2) |
-| `LongStringCodec`          | String up to 65536 characters      | `['url', new LongStringCodec()]`<br />`send('url', 'https://my.long.url/hash/xxx...')` | 2 + (String length * 2) |
-| `Int8Codec`                | Integer from 0 to 255              | `['id', new Int8Codec()]`<br />`send('id', 42)`              | 1                       |
-| `Int16Codec`               | Integer from 0 to 65536            | `['score', new Int16Codec()]`<br />`send('score', 9999)`     | 2                       |
-| `Int32Codec`               | Integer from 0 to 4294967295       | `['position', new Int32Codec()]`<br />`send('position', 4294967295)` | 4                       |
-| `LongIntCodec(byteLength)` | Integer encoded as string          | `['timestamp', new LongIntCodec(13)`]<br />`send('timestamp', Date.now())` | byteLength              |
+| `StringLongCodec`          | String up to 65536 characters      | `['url', new StringLongCodec()]`<br />`send('url', 'https://my.long.url/hash/xxx...')` | 2 + (String length * 2) |
+| `UInt8Codec`                | Integer from 0 to 255              | `['id', new UInt8Codec()]`<br />`send('id', 42)`              | 1                       |
+| `UInt16Codec`               | Integer from 0 to 65536            | `['score', new UInt16Codec()]`<br />`send('score', 9999)`     | 2                       |
+| `UInt32Codec`               | Integer from 0 to 4294967295       | `['position', new UInt32Codec()]`<br />`send('position', 4294967295)` | 4                       |
+| `UIntLongCodec(byteLength)` | Integer encoded as string          | `['timestamp', new UIntLongCodec(13)`]<br />`send('timestamp', Date.now())` | byteLength              |
 
 ## Custom codecs
 
@@ -45,14 +45,14 @@ So the byte length of my event is fixed: 1 + 2 + 2 = 5 bytes.
 Full working example using composition:
 
 ```javascript
-import { Codec, Int8Codec, Int16Codec } from 'netcode/src/encoder/codec';
+import { Codec, UInt8Codec, UInt16Codec } from 'netcode/src/encoder/codec';
 
 export default class PositionCodec extends Codec {
     constructor() {
         super();
 
-        this.int8Codec = new Int8Codec();
-        this.int16Codec = new Int16Codec();
+        this.int8Codec = new UInt8Codec();
+        this.int16Codec = new UInt16Codec();
     }
 
     /**

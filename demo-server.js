@@ -1,17 +1,17 @@
-const { Server, BinaryEncoder, Codec, Int8Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = require('./server');
+const { Server, BinaryEncoder, Codec, UInt8Codec, UInt16Codec, UIntLongCodec, BooleanCodec, StringLongCodec } = require('./server');
 
 // Register your events
 const encoder = new BinaryEncoder([
-    ['id', new Int16Codec()],
-    ['ping', new LongIntCodec(6)],
-    ['pong', new LongIntCodec(6)],
+    ['id', new UInt8Codec()],
+    ['ping', new UIntLongCodec(6)],
+    ['pong', new UIntLongCodec(6)],
     ['inverse', new BooleanCodec()],
-    ['greeting', new StringCodec()],
-    ['total', new Int8Codec()],
+    ['greeting', new StringLongCodec()],
+    ['total', new UInt8Codec()],
 ]);
 
 // Create the server
-const port = process.argv[2];
+const port = process.argv[2] || 8002;
 const server = new Server(port, '127.0.0.1', encoder, 3);
 
 // Listen for new clients
@@ -35,9 +35,9 @@ server.on('client:join', client => {
 
     // Listen for "greeting" event
     client.on('greeting', message => {
-        console.log('Client %s geets you: "%s"', client.id, message);
+        console.log('Client %s greets you: "%s"', client.id, message);
         // Send a "greeting" event
-        client.send('greeting', 'Hello, I\'m server 😊!');
+        client.send('greeting', 'Hello, I\'m server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla.');
     });
 
     // Send event "id" to the client

@@ -35,15 +35,6 @@ export default class Client extends EventEmitter {
     }
 
     /**
-     * Set id
-     *
-     * @param {Number|String} id
-     */
-    setId(id) {
-        this.id = id;
-    }
-
-    /**
      * Send a message
      *
      * @param {String} name

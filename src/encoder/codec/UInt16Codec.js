@@ -1,27 +1,27 @@
 import Codec from './Codec';
 
 /**
- *  8 bit Int codec (0 to 255)
+ *  16 bit Int codec (0 to 65535)
  */
-export default class Int8Codec extends Codec {
+export default class UInt16Codec extends Codec {
     /**
      * @type {Number}
      */
     getByteLength() {
-        return Uint8Array.BYTES_PER_ELEMENT;
+        return Uint16Array.BYTES_PER_ELEMENT;
     }
 
     /**
      * {@inheritdoc}
      */
     encode(buffer, offset, data) {
-        new DataView(buffer).setUint8(offset, data);
+        new DataView(buffer).setUint16(offset, data);
     }
 
     /**
      * {@inheritdoc}
      */
     decode(buffer, offset) {
-        return new DataView(buffer).getUint8(offset);
+        return new DataView(buffer).getUint16(offset);
     }
 }
