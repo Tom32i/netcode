@@ -4,24 +4,32 @@ import Codec from './Codec';
  *  String codec (limited to 255 chars)
  */
 export default class StringCodec extends Codec {
+    constructor() {
+        super();
+
+        this.encoder = new TextEncoder();
+        this.decoder = new TextDecoder(TextEncoder.encoding);
+    }
+
     /**
      * @type {Number}
      */
     getByteLength(data) {
-        return 1 + (data || '').length * 2;
+        return 1 + this.encoder.encode(data || '').length;
     }
 
     /**
      * {@inheritdoc}
      */
     encode(buffer, offset, data) {
-        const view = new DataView(buffer, offset, this.getByteLength(data));
-        const { length } = (data || '');
+        const bytes = this.encoder.encode(data || '');
+        const { length } = bytes;
+        const view = new DataView(buffer, offset, length + 1);
 
         view.setUint8(0, length);
 
         for (var index = 0; index < length; index++) {
-            view.setUint16(1 + (index * 2), data[index].charCodeAt(0));
+            view.setUint8(index + 1, bytes[index]);
         }
     }
 
@@ -31,12 +39,8 @@ export default class StringCodec extends Codec {
     decode(buffer, offset) {
         const view = new DataView(buffer, offset);
         const length = view.getUint8(0);
-        const chars = new Array(length);
+        const bytes = buffer.slice(offset + 1, offset + 1 + length);
 
-        for (var index = 0; index < length; index++) {
-            chars[index] = view.getUint16(1 + index * 2);
-        }
-
-        return String.fromCharCode(...chars);
+        return this.decoder.decode(bytes);
     }
 }
