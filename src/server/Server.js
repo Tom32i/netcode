@@ -14,8 +14,19 @@ export default class Server extends EventEmitter {
      * @param {Number} ping Ping frequency in seconds (0 for no ping)
      * @param {Number} maxPayload Paquet max length in bit
      * @param {ClientDirectory} clients Clients directory
+     * @param {Reconnection} reconnection Auto reconnect handler
+     * @param {Boolean} autoStart Auto start server on construct
      */
-    constructor(port = 8080, host = '0.0.0.0', encoder = new JsonEncoder(), ping = 30, maxPayload = Math.pow(2, 9), clients = new MapClientDirectory(), autoStart = true) {
+    constructor(
+        port = 8080,
+        host = '0.0.0.0',
+        encoder = new JsonEncoder(),
+        ping = 30,
+        maxPayload = Math.pow(2, 9),
+        clients = new MapClientDirectory(),
+        // reconnection = new ReconnectionHandler(),
+        autoStart = true
+    ) {
         super();
 
         this.start = this.start.bind(this);
@@ -48,15 +59,6 @@ export default class Server extends EventEmitter {
     }
 
     /**
-     * Generate a new unique id
-     *
-     * @return {Number|String}
-     */
-    generateId() {
-        return this.clients.generateId();
-    }
-
-    /**
      * Start listening for clients
      *
      * @param {Number} port
@@ -73,7 +75,6 @@ export default class Server extends EventEmitter {
      * @param {Request} request
      */
     addClient(client, request) {
-        client.setId(this.generateId());
         this.clients.add(client);
         client.on('close', this.removeClient);
         this.emit('client:join', client, request);
@@ -105,11 +106,13 @@ export default class Server extends EventEmitter {
      */
     onConnection(socket, request) {
         const ip = request.headers['x-real-ip'] || request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+        // const token = request.headers['authorization'] || null;
 
-        this.addClient(
-            new Client(socket, ip, this.encoder),
-            request
-        );
+        // this.clients.getFromToken(token);
+
+        const client = new Client(socket, ip, this.encoder);
+
+        this.addClient(client, request);
 
         if (this.ping) {
             new Beacon(socket, this.ping);

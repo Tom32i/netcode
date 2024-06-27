@@ -1,14 +1,14 @@
 window.addEventListener('load', () => {
-    const { Client, BinaryEncoder, Codec, Int8Codec, Int16Codec, LongIntCodec, BooleanCodec, StringCodec } = netcode;
+    const { Client, BinaryEncoder, Codec, UInt8Codec, UInt16Codec, UInt64Codec, UIntLongCodec, BooleanCodec, StringCodec, StringLongCodec } = netcode;
 
     // Register your events
     const encoder = new BinaryEncoder([
-        ['id', new Int16Codec()],
-        ['ping', new LongIntCodec(6)],
-        ['pong', new LongIntCodec(6)],
+        ['id', new UInt8Codec()],
+        ['ping', new UIntLongCodec(6)],
+        ['pong', new UIntLongCodec(6)],
         ['inverse', new BooleanCodec()],
-        ['greeting', new StringCodec()],
-        ['total', new Int8Codec()],
+        ['greeting', new StringLongCodec()],
+        ['total', new UInt8Codec()],
     ]);
 
     // Create the client
@@ -17,13 +17,15 @@ window.addEventListener('load', () => {
 
     // Listen for a "pong" event
     client.on('pong', ({ detail: pong }) => {
-        console.info('pong: %s ms', pong - ping);
+        console.info('pong: %s ms (%s - %s)', pong - ping, pong, ping);
     });
 
     // Listen for an "id" event
     client.on('id', ({ detail: id }) => {
         console.log('connected with id %s', id);
         ping = Date.now();
+
+        console.log('sending ping: %s', ping);
 
         // Send a "ping" event
         client.send('ping', ping);
@@ -41,7 +43,8 @@ window.addEventListener('load', () => {
         console.log('Inverse received: %s', status);
 
         // Send a "greeting" event
-        client.send('greeting', 'Hello, I\'m client 😊!');
+        client.send('greeting', 'Hello, I\'m client 😊! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla.');
+        // client.send('greeting', 'Hi!');
     });
 
     // Listen for a "greeting" event

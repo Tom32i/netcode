@@ -4,7 +4,7 @@ import Codec from './Codec';
 /**
  *  Boolean codec
  */
-export default class LongIntCodec extends Codec {
+export default class UIntLongCodec extends Codec {
     /**
      * @param {Number} byteLength
      */
@@ -24,7 +24,6 @@ export default class LongIntCodec extends Codec {
     encode(buffer, offset, data) {
         const view = new DataView(buffer, offset, this.byteLength);
         const bin = bytePad(data.toString(2), this.byteLength).match(/.{8}/g);
-
         bin.forEach((value, index) => view.setUint8(index, parseInt(value, 2)));
     }
 
@@ -33,7 +32,6 @@ export default class LongIntCodec extends Codec {
      */
     decode(buffer, offset) {
         const view = new Uint8Array(buffer, offset, this.byteLength);
-
         return parseInt(Array.from(view).map(value => bytePad(value.toString(2), 1)).join(''), 2);
     }
 }

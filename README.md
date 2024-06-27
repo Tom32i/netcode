@@ -26,11 +26,11 @@ An event is defined by its _unique_ name and the corresponding codec, responsibl
 
 ```javascript
 // events.js
-import Int8Codec from 'netcode/src/encoder/codec/Int8Codec';
+import UInt8Codec from 'netcode/src/encoder/codec/UInt8Codec';
 import StringCodec from 'netcode/src/encoder/codec/StringCodec';
 
 export default [
-	['id', new Int8Codec()],
+	['id', new UInt8Codec()],
 	['say', new StringCodec()],
 ];
 ```
