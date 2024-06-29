@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 type BooleanCodec struct {
 }
 
-func (c BooleanCodec) encode(buffer *bytes.Buffer, data any) {
+func (c BooleanCodec) Encode(buffer *bytes.Buffer, data any) {
 	if data.(bool) {
 		buffer.WriteByte(1)
 	} else {
@@ -15,6 +15,6 @@ func (c BooleanCodec) encode(buffer *bytes.Buffer, data any) {
 	}
 }
 
-func (c BooleanCodec) decode(buffer *bytes.Buffer) any {
+func (c BooleanCodec) Decode(buffer *bytes.Buffer) any {
 	return buffer.Next(1)[0] > 0
 }

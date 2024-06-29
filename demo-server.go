@@ -4,13 +4,14 @@ import (
 	"flag"
 	"log"
 	"math"
-	"github.com/Tom32i/netcode/internal/codec"
-	"github.com/Tom32i/netcode/internal/server"
+	netcode "github.com/Tom32i/netcode/go"
+	"github.com/gorilla/websocket"
+	"net/http"
 	"time"
 )
 
-type DemoServer struct {
-	server *server.Server
+type Demo struct {
+	room *netcode.Room
 }
 
 func main() {
@@ -18,30 +19,35 @@ func main() {
 
 	flag.Parse()
 
-	encoder := codec.CreateBinaryEncoder([]*codec.RegisteredCodec{
-		{0, "id", codec.UInt8Codec{}},
-		{1, "ping", codec.LongUIntCodec{6}},
-		{2, "pong", codec.LongUIntCodec{6}},
-		{3, "inverse", codec.BooleanCodec{}},
-		{4, "greeting", codec.StringLongCodec{}},
-		{5, "total", codec.UInt8Codec{}},
-	}, codec.UInt8Codec{})
+	encoder := netcode.CreateBinaryEncoder([]*netcode.RegisteredCodec{
+		{0, "id", netcode.UInt8Codec{}},
+		{1, "ping", netcode.LongUIntCodec{6}},
+		{2, "pong", netcode.LongUIntCodec{6}},
+		{3, "inverse", netcode.BooleanCodec{}},
+		{4, "greeting", netcode.StringLongCodec{}},
+		{5, "total", netcode.UInt8Codec{}},
+	}, netcode.UInt8Codec{})
 
-	clients := server.CreateClientDirectory(uint(math.Pow(2, 8)))
-	server := server.CreateServer(*port, encoder, clients)
-
-	demo := DemoServer{&server}
+	clients := netcode.CreateClientDirectory(uint(math.Pow(2, 8)))
+	room := netcode.CreateRoom(clients, encoder)
+	demo := Demo{room}
 
 	go demo.run()
 
-	demo.server.Start()
+	netcode.Start(*port, "/", func (socket *websocket.Conn, request *http.Request) {
+		err := room.Join(socket)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	})
 }
 
-func (demo *DemoServer) run() {
+func (demo *Demo) run() {
 	log.Printf("Demo is running")
 	for {
 		select {
-		case m := <-demo.server.In:
+		case m := <-demo.room.In:
 			switch m.Message.Name {
 			case "ping":
 				demo.handlePing(m.Client, m.Message)
@@ -50,12 +56,12 @@ func (demo *DemoServer) run() {
 			default:
 				log.Printf("[client #%d] '%s': %v", m.Client.ID, m.Message.Name, m.Message.Data)
 			}
-		case e := <-demo.server.Out:
+		case e := <-demo.room.Out:
 			switch e.Name {
 			case "client:join":
-				demo.onClientJoin(e.Data.(*server.Client))
+				demo.onClientJoin(e.Data.(*netcode.Client))
 			case "client:leave":
-				demo.onClientLeave(e.Data.(*server.Client))
+				demo.onClientLeave(e.Data.(*netcode.Client))
 			default:
 				log.Printf("event '%s': %v", e.Name, e.Data)
 			}
@@ -63,30 +69,30 @@ func (demo *DemoServer) run() {
 	}
 }
 
-func (demo *DemoServer) broadcastTotal() {
-	message := codec.Message{"total", uint8(demo.server.Clients.Count())}
-	buf := demo.server.Encoder.Encode(message)
-	demo.server.Clients.ForEach(func(c *server.Client) { c.Write(buf) })
+func (demo *Demo) broadcastTotal() {
+	message := &netcode.Message{"total", uint8(demo.room.Clients.Count())}
+	buf := demo.room.Encoder.Encode(message)
+	demo.room.Clients.ForEach(func(c *netcode.Client) { c.Write(buf) })
 }
 
-func (demo *DemoServer) onClientJoin(c *server.Client) {
+func (demo *Demo) onClientJoin(c *netcode.Client) {
 	log.Printf("Client #%d joined.", c.ID)
-	c.Send(codec.Message{"id", uint8(c.ID)})
+	c.Send(&netcode.Message{"id", uint8(c.ID)})
 	demo.broadcastTotal()
 }
 
-func (demo *DemoServer) onClientLeave(c *server.Client) {
+func (demo *Demo) onClientLeave(c *netcode.Client) {
 	log.Printf("Client #%d left.", c.ID)
 	demo.broadcastTotal()
 }
 
-func (demo *DemoServer) handlePing(c *server.Client, m codec.Message) {
+func (demo *Demo) handlePing(c *netcode.Client, m *netcode.Message) {
 	log.Printf("[client #%d] ping %d", c.ID, m.Data)
-	c.Send(codec.Message{"pong", uint(time.Now().UnixMilli())})
-	c.Send(codec.Message{"inverse", true})
+	c.Send(&netcode.Message{"pong", uint(time.Now().UnixMilli())})
+	c.Send(&netcode.Message{"inverse", true})
 }
 
-func (demo *DemoServer) handleGreeting(c *server.Client, m codec.Message) {
+func (demo *Demo) handleGreeting(c *netcode.Client, m *netcode.Message) {
 	log.Printf("Client #%d greets you: '%s'", c.ID, m.Data)
-	c.Send(codec.Message{"greeting", "Hello, I'm server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla."})
+	c.Send(&netcode.Message{"greeting", "Hello, I'm server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla."})
 }

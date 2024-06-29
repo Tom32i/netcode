@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -7,13 +7,13 @@ import (
 type StringCodec struct {
 }
 
-func (c StringCodec) encode(buffer *bytes.Buffer, data any) {
+func (c StringCodec) Encode(buffer *bytes.Buffer, data any) {
 	length := len(data.(string))
 	buffer.WriteByte(uint8(length))
 	buffer.WriteString(data.(string))
 }
 
-func (c StringCodec) decode(buffer *bytes.Buffer) any {
+func (c StringCodec) Decode(buffer *bytes.Buffer) any {
 	length := int(buffer.Next(1)[0])
 
 	return string(buffer.Next(length))

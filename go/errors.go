@@ -1,4 +1,4 @@
-package server
+package netcode
 
 type ServerError string
 

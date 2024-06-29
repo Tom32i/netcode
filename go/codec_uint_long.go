@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ type LongUIntCodec struct {
 	ByteLength int
 }
 
-func (c LongUIntCodec) encode(buffer *bytes.Buffer, data any) {
+func (c LongUIntCodec) Encode(buffer *bytes.Buffer, data any) {
 	format := fmt.Sprintf("%%0%ds", c.ByteLength*8)
 	value := strconv.FormatUint(uint64(data.(uint)), 2)
 	value = fmt.Sprintf(format, value)
@@ -21,7 +21,7 @@ func (c LongUIntCodec) encode(buffer *bytes.Buffer, data any) {
 	}
 }
 
-func (c LongUIntCodec) decode(buffer *bytes.Buffer) any {
+func (c LongUIntCodec) Decode(buffer *bytes.Buffer) any {
 	var buf = new(bytes.Buffer)
 	parts := buffer.Next(c.ByteLength)
 

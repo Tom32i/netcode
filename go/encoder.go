@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -11,8 +11,8 @@ type BinaryEncoder struct {
 }
 
 type Codec interface {
-	encode(buffer *bytes.Buffer, data any)
-	decode(buffer *bytes.Buffer) any
+	Encode(buffer *bytes.Buffer, data any)
+	Decode(buffer *bytes.Buffer) any
 }
 
 type RegisteredCodec struct {
@@ -42,24 +42,24 @@ func CreateBinaryEncoder(codecs []*RegisteredCodec, idCodec Codec) *BinaryEncode
 	}
 }
 
-func (e BinaryEncoder) Encode(message Message) []byte {
+func (e BinaryEncoder) Encode(message *Message) []byte {
 	var buffer bytes.Buffer
 
 	codec := e.codecsByName[message.Name]
 
-	e.idCodec.encode(&buffer, codec.Id)
-	codec.Handler.encode(&buffer, message.Data)
+	e.idCodec.Encode(&buffer, codec.Id)
+	codec.Handler.Encode(&buffer, message.Data)
 
 	return buffer.Bytes()
 }
 
-func (e BinaryEncoder) Decode(data []byte) Message {
+func (e BinaryEncoder) Decode(data []byte) *Message {
 	var buffer = bytes.NewBuffer(data)
-	id := e.idCodec.decode(buffer).(uint8)
+	id := e.idCodec.Decode(buffer).(uint8)
 	codec := e.codecsById[id]
 
-	return Message{
+	return &Message{
 		Name: codec.Name,
-		Data: codec.Handler.decode(buffer),
+		Data: codec.Handler.Decode(buffer),
 	}
 }

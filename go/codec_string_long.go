@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 type StringLongCodec struct {
 }
 
-func (c StringLongCodec) encode(buffer *bytes.Buffer, data any) {
+func (c StringLongCodec) Encode(buffer *bytes.Buffer, data any) {
 	length := len(data.(string))
 
 	b := make([]byte, 2)
@@ -18,7 +18,7 @@ func (c StringLongCodec) encode(buffer *bytes.Buffer, data any) {
 	buffer.WriteString(data.(string))
 }
 
-func (c StringLongCodec) decode(buffer *bytes.Buffer) any {
+func (c StringLongCodec) Decode(buffer *bytes.Buffer) any {
 	length := binary.BigEndian.Uint16(buffer.Next(2))
 
 	return string(buffer.Next(int(length)))

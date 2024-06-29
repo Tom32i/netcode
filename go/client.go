@@ -1,8 +1,6 @@
-package server
+package netcode
 
 import (
-	"github.com/Tom32i/netcode/internal/codec"
-	//"github.com/Tom32i/netcode/internal/security"
 	//"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"log"
@@ -11,19 +9,19 @@ import (
 type Client struct {
 	ID uint
 	//uuid    uuid.UUID
-	IP string
+	// IP strings
 	//token   security.Token
-	in      chan ClientMessage
+	In      chan ClientMessage
 	socket  *websocket.Conn
-	encoder *codec.BinaryEncoder
+	encoder *BinaryEncoder
 }
 
 type ClientMessage struct {
 	Client  *Client
-	Message codec.Message
+	Message *Message
 }
 
-func (c *Client) Send(message codec.Message) {
+func (c *Client) Send(message *Message) {
 	c.Write(c.encoder.Encode(message))
 }
 
@@ -31,7 +29,7 @@ func (c *Client) Write(data []byte) {
 	c.socket.WriteMessage(websocket.BinaryMessage, data)
 }
 
-func (c *Client) run(onClose func(*Client)) {
+func (c *Client) Run(onClose func(*Client)) {
 	defer func() {
 		c.socket.Close()
 		onClose(c)
@@ -47,6 +45,6 @@ func (c *Client) run(onClose func(*Client)) {
 			break
 		}
 
-		c.in <- ClientMessage{c, c.encoder.Decode(data)}
+		c.In <- ClientMessage{c, c.encoder.Decode(data)}
 	}
 }

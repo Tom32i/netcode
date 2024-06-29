@@ -1,4 +1,4 @@
-package codec
+package netcode
 
 import (
 	"bytes"
@@ -8,12 +8,12 @@ import (
 type UInt32Codec struct {
 }
 
-func (c UInt32Codec) encode(buffer *bytes.Buffer, data any) {
+func (c UInt32Codec) Encode(buffer *bytes.Buffer, data any) {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, data.(uint32))
 	buffer.Write(b)
 }
 
-func (c UInt32Codec) decode(buffer *bytes.Buffer) any {
+func (c UInt32Codec) Decode(buffer *bytes.Buffer) any {
 	return binary.BigEndian.Uint32(buffer.Next(4))
 }
