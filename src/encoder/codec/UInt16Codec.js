@@ -1,7 +1,7 @@
-import Codec from './Codec';
+import Codec from './Codec.js';
 
 /**
- *  16 bit Int codec (0 to 65535)
+ *  16 bit unsigned Int codec (0 to 65535)
  */
 export default class UInt16Codec extends Codec {
     /**

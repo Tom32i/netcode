@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func Start(port int, path string, onSocket func (socket *websocket.Conn, request *http.Request)) {
+func Start(port int, path string, onSocket func(*websocket.Conn, *http.Request)) {
 	upgrader := &websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -16,19 +16,18 @@ func Start(port int, path string, onSocket func (socket *websocket.Conn, request
 		CheckOrigin:     CheckOrigin,
 	}
 
-	http.HandleFunc(path, func (w http.ResponseWriter, r *http.Request) {
-		socket, err := upgrader.Upgrade(w, r, nil)
+	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		s, err := upgrader.Upgrade(w, r, nil)
 
 		if err != nil {
-			log.Printf("Couldnot upgrade connection: %s", err)
+			log.Printf("Could not upgrade connection: %s", err)
 			return
 		}
 
-		onSocket(socket, r)
+		onSocket(s, r)
 	})
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-	log.Printf("Listening on port %d", port)
 
 	if err != nil {
 		log.Fatal(err)

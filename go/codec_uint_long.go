@@ -6,11 +6,11 @@ import (
 	"strconv"
 )
 
-type LongUIntCodec struct {
+type UIntLongCodec struct {
 	ByteLength int
 }
 
-func (c LongUIntCodec) Encode(buffer *bytes.Buffer, data any) {
+func (c UIntLongCodec) Encode(buffer *bytes.Buffer, data any) {
 	format := fmt.Sprintf("%%0%ds", c.ByteLength*8)
 	value := strconv.FormatUint(uint64(data.(uint)), 2)
 	value = fmt.Sprintf(format, value)
@@ -21,15 +21,14 @@ func (c LongUIntCodec) Encode(buffer *bytes.Buffer, data any) {
 	}
 }
 
-func (c LongUIntCodec) Decode(buffer *bytes.Buffer) any {
+func (c UIntLongCodec) Decode(buffer *bytes.Buffer) any {
 	var buf = new(bytes.Buffer)
 	parts := buffer.Next(c.ByteLength)
-
-	for _, p := range parts {
-		buf.WriteString(fmt.Sprintf("%08s", strconv.FormatUint(uint64(p), 2)))
+	for _, x := range parts {
+		buf.WriteString(fmt.Sprintf("%08s", strconv.FormatUint(uint64(x), 2)))
 	}
 
 	value, _ := strconv.ParseUint(buf.String(), 2, 64)
 
-	return value
+	return uint(value)
 }

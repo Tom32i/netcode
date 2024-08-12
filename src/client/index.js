@@ -1,25 +1,37 @@
-import Client from 'netcode/src/client/Client';
-import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
-import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
-import Codec from 'netcode/src/encoder/codec/Codec';
-import UInt8Codec from 'netcode/src/encoder/codec/UInt8Codec';
-import UInt16Codec from 'netcode/src/encoder/codec/UInt16Codec';
-import UInt32Codec from 'netcode/src/encoder/codec/UInt32Codec';
-import UIntLongCodec from 'netcode/src/encoder/codec/UIntLongCodec';
-import BooleanCodec from 'netcode/src/encoder/codec/BooleanCodec';
-import StringCodec from 'netcode/src/encoder/codec/StringCodec';
-import StringLongCodec from 'netcode/src/encoder/codec/StringLongCodec';
+import Client from './Client.js';
+import JsonEncoder from '../encoder/JsonEncoder.js';
+import BinaryEncoder from '../encoder/BinaryEncoder.js';
+import Codec from '../encoder/codec/Codec.js';
+import BooleanCodec from '../encoder/codec/BooleanCodec.js';
+import Float64Codec from '../encoder/codec/Float64Codec.js';
+import FloatPrecisionCodec from '../encoder/codec/FloatPrecisionCodec.js';
+import Int16Codec from '../encoder/codec/Int16Codec.js';
+import Int32Codec from '../encoder/codec/Int32Codec.js';
+import Int8Codec from '../encoder/codec/Int8Codec.js';
+import NullCodec from '../encoder/codec/NullCodec.js';
+import StringCodec from '../encoder/codec/StringCodec.js';
+import StringLongCodec from '../encoder/codec/StringLongCodec.js';
+import UInt16Codec from '../encoder/codec/UInt16Codec.js';
+import UInt32Codec from '../encoder/codec/UInt32Codec.js';
+import UInt8Codec from '../encoder/codec/UInt8Codec.js';
+import UIntLongCodec from '../encoder/codec/UIntLongCodec.js';
 
 export {
     Client,
     JsonEncoder,
     BinaryEncoder,
     Codec,
-    UInt8Codec,
-    UInt16Codec,
-    UInt32Codec,
-    UIntLongCodec,
     BooleanCodec,
+    Float64Codec,
+    FloatPrecisionCodec,
+    Int16Codec,
+    Int32Codec,
+    Int8Codec,
+    NullCodec,
     StringCodec,
     StringLongCodec,
+    UInt16Codec,
+    UInt32Codec,
+    UInt8Codec,
+    UIntLongCodec,
 };

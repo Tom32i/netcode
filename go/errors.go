@@ -7,6 +7,6 @@ func (err ServerError) Error() string {
 }
 
 const (
-	ErrInvalidToken = ServerError("invalid token")
-	ErrInternal     = ServerError("internal error")
+	ErrCodecNotFound = ServerError("codec not found")
+	ErrInternal      = ServerError("internal error")
 )

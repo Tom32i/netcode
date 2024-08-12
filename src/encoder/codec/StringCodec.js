@@ -1,4 +1,4 @@
-import Codec from './Codec';
+import Codec from './Codec.js';
 
 /**
  *  String codec (limited to 255 chars)

@@ -39,7 +39,7 @@ export default class JsonEncoder {
     decode(value) {
         try {
             return JSON.parse(value);
-        } catch(error) {
+        } catch {
             return null;
         }
     }

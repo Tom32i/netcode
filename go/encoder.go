@@ -2,6 +2,7 @@ package netcode
 
 import (
 	"bytes"
+	"fmt"
 )
 
 type BinaryEncoder struct {
@@ -10,15 +11,15 @@ type BinaryEncoder struct {
 	codecsById   map[uint8]*RegisteredCodec
 }
 
-type Codec interface {
-	Encode(buffer *bytes.Buffer, data any)
-	Decode(buffer *bytes.Buffer) any
-}
-
 type RegisteredCodec struct {
 	Id      uint8
 	Name    string
 	Handler Codec
+}
+
+type Codec interface {
+	Encode(buffer *bytes.Buffer, data any)
+	Decode(buffer *bytes.Buffer) any
 }
 
 type Message struct {
@@ -30,7 +31,8 @@ func CreateBinaryEncoder(codecs []*RegisteredCodec, idCodec Codec) *BinaryEncode
 	codecsByName := make(map[string]*RegisteredCodec)
 	codecsById := make(map[uint8]*RegisteredCodec)
 
-	for _, codec := range codecs {
+	for id, codec := range codecs {
+		codec.Id = uint8(id)
 		codecsById[codec.Id] = codec
 		codecsByName[codec.Name] = codec
 	}
@@ -42,24 +44,32 @@ func CreateBinaryEncoder(codecs []*RegisteredCodec, idCodec Codec) *BinaryEncode
 	}
 }
 
-func (e BinaryEncoder) Encode(message *Message) []byte {
+func (e BinaryEncoder) Encode(message *Message) ([]byte, error) {
 	var buffer bytes.Buffer
 
-	codec := e.codecsByName[message.Name]
+	codec, ok := e.codecsByName[message.Name]
+
+	if !ok {
+		return buffer.Bytes(), fmt.Errorf(" %w: name \"%s\" could be not found", ErrCodecNotFound, message.Name)
+	}
 
 	e.idCodec.Encode(&buffer, codec.Id)
 	codec.Handler.Encode(&buffer, message.Data)
 
-	return buffer.Bytes()
+	return buffer.Bytes(), nil
 }
 
-func (e BinaryEncoder) Decode(data []byte) *Message {
+func (e BinaryEncoder) Decode(data []byte) (*Message, error) {
 	var buffer = bytes.NewBuffer(data)
 	id := e.idCodec.Decode(buffer).(uint8)
-	codec := e.codecsById[id]
+	codec, ok := e.codecsById[id]
+
+	if !ok {
+		return nil, fmt.Errorf(" %w: id \"%d\" could be not found", ErrCodecNotFound, id)
+	}
 
 	return &Message{
 		Name: codec.Name,
 		Data: codec.Handler.Decode(buffer),
-	}
+	}, nil
 }

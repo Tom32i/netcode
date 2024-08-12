@@ -4,6 +4,9 @@ import (
 	"bytes"
 )
 
+/*
+ *  8 bit unsigned Int codec (0 to 255)
+ */
 type UInt8Codec struct {
 }
 

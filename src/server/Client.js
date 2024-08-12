@@ -89,7 +89,7 @@ export default class Client extends EventEmitter {
     /**
      * On close
      */
-    onClose() {
+    onClose(data) { // eslint-disable-line no-unused-vars
         this.socket = null;
         this.emit('close', this);
     }

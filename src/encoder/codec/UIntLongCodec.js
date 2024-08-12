@@ -1,8 +1,8 @@
-import { bytePad } from 'netcode/src/utils';
-import Codec from './Codec';
+import { bytePad } from '../../utils.js';
+import Codec from './Codec.js';
 
 /**
- *  Boolean codec
+ *  Long unsigned int codec
  */
 export default class UIntLongCodec extends Codec {
     /**

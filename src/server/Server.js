@@ -1,17 +1,17 @@
 import http from 'http';
 import EventEmitter from 'events';
 import { WebSocketServer } from 'ws';
-import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
-import MapClientDirectory from 'netcode/src/server/MapClientDirectory';
-import Client from 'netcode/src/server/Client';
-import Beacon from 'netcode/src/server/Beacon';
+import JsonEncoder from '../encoder/JsonEncoder.js';
+import MapClientDirectory from './MapClientDirectory.js';
+import Client from './Client.js';
+import Beacon from './Beacon.js';
 
 export default class Server extends EventEmitter {
     /**
      * @param {Number} port Port to listen on
      * @param {String} host Host to listen on
      * @param {JsonEncoder|BinaryEncoder} encoder Encoder to use to read/write event messages
-     * @param {Number} ping Ping frequency in seconds (0 for no ping)
+     * @param {Number} pingInterval Ping frequency in seconds (0 for no ping)
      * @param {Number} maxPayload Paquet max length in bit
      * @param {ClientDirectory} clients Clients directory
      * @param {Reconnection} reconnection Auto reconnect handler
@@ -21,7 +21,7 @@ export default class Server extends EventEmitter {
         port = 8080,
         host = '0.0.0.0',
         encoder = new JsonEncoder(),
-        ping = 30,
+        pingInterval = 30,
         maxPayload = Math.pow(2, 9),
         clients = new MapClientDirectory(),
         // reconnection = new ReconnectionHandler(),
@@ -35,6 +35,7 @@ export default class Server extends EventEmitter {
         this.onConnection = this.onConnection.bind(this);
         this.onListening = this.onListening.bind(this);
         this.removeClient = this.removeClient.bind(this);
+        this.emit = this.emit.bind(this);
 
         this.port = port;
         this.host = host;
@@ -45,7 +46,7 @@ export default class Server extends EventEmitter {
             maxPayload
         });
         this.clients = clients;
-        this.ping = ping;
+        this.pingInterval = pingInterval;
 
         this.server.on('request', this.onRequest);
         this.server.on('error', this.onError);
@@ -74,10 +75,10 @@ export default class Server extends EventEmitter {
      * @param {Client} client
      * @param {Request} request
      */
-    addClient(client, request) {
+    addClient(client, request) { // eslint-disable-line no-unused-vars
         this.clients.add(client);
         client.on('close', this.removeClient);
-        this.emit('client:join', client, request);
+        this.emit('client:join', client);
     }
 
     /**
@@ -106,16 +107,12 @@ export default class Server extends EventEmitter {
      */
     onConnection(socket, request) {
         const ip = request.headers['x-real-ip'] || request.headers['x-forwarded-for'] || request.connection.remoteAddress;
-        // const token = request.headers['authorization'] || null;
-
-        // this.clients.getFromToken(token);
-
         const client = new Client(socket, ip, this.encoder);
 
         this.addClient(client, request);
 
-        if (this.ping) {
-            new Beacon(socket, this.ping);
+        if (this.pingInterval) {
+            new Beacon(client, this.emit, this.pingInterval);
         }
     }
 

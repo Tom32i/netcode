@@ -1,27 +1,27 @@
 import Codec from './Codec.js';
 
 /**
- *  8 bit unsigned Int codec (0 to 255)
+ *  8 bit signed Int codec (-128 to 127)
  */
-export default class UInt8Codec extends Codec {
+export default class Int8Codec extends Codec {
     /**
      * @type {Number}
      */
     getByteLength() {
-        return Uint8Array.BYTES_PER_ELEMENT;
+        return Int8Array.BYTES_PER_ELEMENT;
     }
 
     /**
      * {@inheritdoc}
      */
     encode(buffer, offset, data) {
-        new DataView(buffer).setUint8(offset, data);
+        new DataView(buffer).setInt8(offset, data);
     }
 
     /**
      * {@inheritdoc}
      */
     decode(buffer, offset) {
-        return new DataView(buffer).getUint8(offset);
+        return new DataView(buffer).getInt8(offset);
     }
 }

@@ -1,5 +1,5 @@
 import EventEmitter from 'tom32i-event-emitter.js';
-import JsonEncoder from 'netcode/src/encoder/JsonEncoder';
+import JsonEncoder from '../encoder/JsonEncoder.js';
 
 export default class Client extends EventEmitter {
     /**
@@ -39,9 +39,12 @@ export default class Client extends EventEmitter {
 
     /**
      * Close connection
+     *
+     * @param {Number} code https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
+     * @param {String} reason https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.6
      */
-    close() {
-        this.socket.close();
+    close(code, reason) {
+        this.socket.close(code, reason);
     }
 
     /**

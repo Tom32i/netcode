@@ -1,4 +1,4 @@
-import UInt8Codec from 'netcode/src/encoder/codec/UInt8Codec';
+import UInt8Codec from './codec/UInt8Codec.js';
 
 export default class BinaryEncoder {
     /**
@@ -77,7 +77,10 @@ export default class BinaryEncoder {
             throw new Error(`No handler found at index "${id}"`);
         }
 
-        return { name: handler.name, data: handler.decode(buffer, this.idCodec.getByteLength()) };
+        return {
+            name: handler.name,
+            data: handler.decode(buffer, this.idCodec.getByteLength()),
+        };
     }
 
 }

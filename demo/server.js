@@ -1,4 +1,5 @@
-const { Server, BinaryEncoder, Codec, UInt8Codec, UInt16Codec, UIntLongCodec, BooleanCodec, StringLongCodec } = require('./server');
+import netcode from '../server.cjs';
+const { Server, BinaryEncoder, UInt8Codec, UIntLongCodec, BooleanCodec, StringLongCodec, } = netcode;
 
 // Register your events
 const encoder = new BinaryEncoder([
@@ -16,13 +17,13 @@ const server = new Server(port, '127.0.0.1', encoder, 3);
 
 // Listen for new clients
 server.on('client:join', client => {
-    console.log('Client %s joined.', client.id);
+    console.info('Client %s joined.', client.id);
 
     // Listen for "ping" event
     client.on('ping', ping => {
         // Answer with a "pong" event
         client.send('pong', Date.now());
-        console.log('Client %s ping received: %s.', client.id, ping);
+        console.info('Client %s ping received: %s.', client.id, ping);
 
         // Send a "inverse" event
         client.send('inverse', true);
@@ -30,12 +31,12 @@ server.on('client:join', client => {
 
     // Listen for "inverse" event
     client.on('inverse', status => {
-        console.log('Client %s inverse received: %s.', client.id, status);
+        console.info('Client %s inverse received: %s.', client.id, status);
     });
 
     // Listen for "greeting" event
     client.on('greeting', message => {
-        console.log('Client %s greets you: "%s"', client.id, message);
+        console.info('Client %s greets you: "%s"', client.id, message);
         // Send a "greeting" event
         client.send('greeting', 'Hello, I\'m server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla.');
     });
@@ -48,15 +49,18 @@ server.on('client:join', client => {
 
 // Listen for disconnecting clients
 server.on('client:leave', client => {
-    console.log('Client %s left.', client.id);
+    console.info('Client %s left.', client.id);
     broadcastTotal();
 });
 
-server.on('ready', () => console.log('Listening on port %s', port));
+server.on('ping', ({ client }) => console.info('Client %s ping.', client.id));
+server.on('pong', ({ client, duration }) => console.info('Client %s ping: %sms', client.id, duration));
+
+server.on('ready', () => console.info('Listening on port %s', port));
 
 function broadcastTotal() {
     const { length } = server.clients;
     server.clients.forEach(client => client.send('total', length));
 }
 
-module.exports = server;
+export default server;

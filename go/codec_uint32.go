@@ -5,6 +5,9 @@ import (
 	"encoding/binary"
 )
 
+/**
+ *  16 bit unsigned Int codec (from 0 to 65535)
+ */
 type UInt32Codec struct {
 }
 

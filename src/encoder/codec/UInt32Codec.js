@@ -1,7 +1,7 @@
-import Codec from './Codec';
+import Codec from './Codec.js';
 
 /**
- *  32 bit Int codec (0 to 4294967295)
+ *  32 bit unsigned Int codec (0 to 4294967295)
  */
 export default class UInt32Codec extends Codec {
     /**

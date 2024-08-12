@@ -13,6 +13,7 @@
     "videogame",
     "multiplayer"
   ],
+  "type": "module",
   "scripts": {
     "watch": "webpack --watch --mode=development",
     "build": "webpack --mode=production",
@@ -34,14 +35,16 @@
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.0",
-    "babel-loader": "^8.2.2",
-    "eslint": "^7.26.0",
+    "@eslint/js": "^9.14.0",
+    "babel-loader": "^9.2.1",
+    "eslint": "^9.14.0",
+    "globals": "^15.11.0",
     "mocha": "^10.2.0",
-    "webpack": "^5.36.0",
-    "webpack-cli": "^4.6.0"
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.7",
-    "utf-8-validate": "^5.0.10"
+    "utf-8-validate": "^6.0.5"
   }
 }
