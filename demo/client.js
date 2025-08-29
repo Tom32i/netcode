@@ -1,6 +1,14 @@
 /* global netcode */
 window.addEventListener('load', () => {
     const { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, BooleanCodec, StringLongCodec } = netcode;
+    const target = document.getElementById('output');
+    const { info } = console;
+
+    console.info = (message, ...subst) => {
+        info(message, ...subst);
+        subst.forEach(sub => message = message.replace('%s', sub));
+        output.innerText += message + '\n';
+    }
 
     // Register your events
     const encoder = new BinaryEncoder([

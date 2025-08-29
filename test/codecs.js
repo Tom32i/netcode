@@ -1,19 +1,19 @@
 import assert from 'assert';
-import netcode from '../server.cjs';
-const {
-  Int8Codec,
-  Int16Codec,
-  Int32Codec,
-  UInt8Codec,
-  UInt16Codec,
-  UInt32Codec,
+import {
   BooleanCodec,
-  UIntLongCodec,
-  StringCodec,
-  StringLongCodec,
   Float64Codec,
   FloatPrecisionCodec,
-} = netcode;
+  Int16Codec,
+  Int32Codec,
+  Int8Codec,
+  NullCodec,
+  StringCodec,
+  StringLongCodec,
+  UInt16Codec,
+  UInt32Codec,
+  UInt8Codec,
+  UIntLongCodec,
+} from '../src/server/index.js';
 
 describe('UInt8Codec', () => {
   const codec = new UInt8Codec();

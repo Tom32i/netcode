@@ -1,11 +1,11 @@
-import {
+const {
     Server,
     BinaryEncoder,
     UInt8Codec,
     UIntLongCodec,
     BooleanCodec,
     StringLongCodec,
-} from '../src/server/index.js';
+} = require('../dist/server/netcode.umd.cjs');
 
 // Register your events
 const encoder = new BinaryEncoder([

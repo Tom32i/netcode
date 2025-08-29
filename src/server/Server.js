@@ -75,10 +75,10 @@ export default class Server extends EventEmitter {
      * @param {Client} client
      * @param {Request} request
      */
-    addClient(client, request) { // eslint-disable-line no-unused-vars
+    addClient(client, request) {
         this.clients.add(client);
         client.on('close', this.removeClient);
-        this.emit('client:join', client);
+        this.emit('client:join', client, request);
     }
 
     /**

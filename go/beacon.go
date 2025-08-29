@@ -32,17 +32,24 @@ type Beacon struct {
 	done     chan bool
 	ping     time.Time
 	mu       sync.RWMutex
+	running bool
 }
 
 func (b *Beacon) start() {
-	go b.run()
+	if !b.running {
+		go b.run()
+		b.sendPing();
+	}
 }
 
 func (b *Beacon) stop() {
-	b.done <- true
+	if b.running {
+		b.done <- true
+	}
 }
 
-func (b *Beacon) clear() {
+func (b *Beacon) destroy() {
+	b.stop()
 	close(b.done)
 }
 

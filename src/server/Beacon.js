@@ -35,6 +35,7 @@ export default class Beacon {
             this.socket.on('pong', this.onPong);
             this.socket.on('close', this.stop);
             this.interval = setInterval(this.sendPing, this.frequency);
+            setImmediate(this.sendPing);
         }
     }
 
@@ -54,14 +55,14 @@ export default class Beacon {
      * Send ping
      */
     sendPing() {
-        this.socket.ping(Date.now());
+        this.socket.ping(performance.now());
     }
     /**
      * Receive pong
      */
     onPong(buffer) {
-        const now = Date.now();
-        const ping = parseInt(buffer.toString(), 10);
+        const now = performance.now();
+        const ping = parseFloat(buffer.toString());
 
         this.emit('pong', { client: this.client, duration: now - ping });
     }

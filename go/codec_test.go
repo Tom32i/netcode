@@ -113,11 +113,11 @@ func TestUInt64Codec(t *testing.T) {
 	}
 }
 
-// Test LongUIntCodec encode/decode.
-func TestLongUIntCodec(t *testing.T) {
+// Test UIntLongCodec encode/decode.
+func TestUIntLongCodec(t *testing.T) {
 	var buffer bytes.Buffer
 	var want, got uint
-	codec := LongUIntCodec{6}
+	codec := UIntLongCodec{6}
 
 	want = 0
 	codec.Encode(&buffer, want)

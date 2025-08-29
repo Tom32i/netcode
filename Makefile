@@ -6,32 +6,44 @@ install:
 	npm install
 	go get
 
-# Launch watch
+# Launch watcher
 watch:
-	npx webpack --watch --mode=development
+	npm run watch
+
+# Launch dev server
+start:
+	npm run start
 
 # Build lib
-build:
-	npx webpack --mode=production
+build: build-client build-server
 
-# Launch demo client
-demo-client:
-	php -S 0.0.0.0:8000 -t .
+build-client:
+	npm run build
 
-# Launch Node demo server
-demo-server-node: build
+build-server:
+	npm run node-build
+
+# Preview lib
+preview:
+	npm run preview
+
+# Launch NodeJS demo server
+server-node:
 	node ./demo/server.js 8002
 
+# Launch NodeJS demo server
+server-node-common: build
+	node ./demo/server.cjs 8002
+
 ## Launch Golang demo server
-#demo-server-go: export GODEBUG=gctrace=1
-demo-server-go:
+server-go:
 	go run demo/server.go
 
 # Lint and code style fix
 lint: lint-js lint-go
 
 lint-js:
-	npx eslint demo/**/*.js src/** --fix
+	npm run lint
 
 lint-go:
 	gofmt -s -w .

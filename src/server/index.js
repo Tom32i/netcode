@@ -1,8 +1,11 @@
 import Server from './Server.js';
+import Beacon from './Beacon.js';
+import Client from './Client.js';
+import MapClientDirectory from './MapClientDirectory.js';
 import JsonEncoder from '../encoder/JsonEncoder.js';
 import BinaryEncoder from '../encoder/BinaryEncoder.js';
-import BooleanCodec from '../encoder/codec/BooleanCodec.js';
 import Codec from '../encoder/codec/Codec.js';
+import BooleanCodec from '../encoder/codec/BooleanCodec.js';
 import Float64Codec from '../encoder/codec/Float64Codec.js';
 import FloatPrecisionCodec from '../encoder/codec/FloatPrecisionCodec.js';
 import Int16Codec from '../encoder/codec/Int16Codec.js';
@@ -18,10 +21,13 @@ import UIntLongCodec from '../encoder/codec/UIntLongCodec.js';
 
 export {
     Server,
+    Beacon,
+    Client,
+    MapClientDirectory,
     JsonEncoder,
     BinaryEncoder,
-    BooleanCodec,
     Codec,
+    BooleanCodec,
     Float64Codec,
     FloatPrecisionCodec,
     Int16Codec,
