@@ -4,7 +4,12 @@
 # Install dependencies
 install:
 	npm install
-	go get
+	go get all
+
+# Update dependencies
+update:
+	npm update
+	go get -u all
 
 # Launch watcher
 watch:
