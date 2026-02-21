@@ -7,24 +7,21 @@ import (
 	"net/http"
 )
 
-func Start(port int, path string, onSocket func(*websocket.Conn, *http.Request)) {
+func Start(port int, path string, onSocket func(w http.ResponseWriter, r *http.Request, c *websocket.Conn), checkOrigin func(r *http.Request) bool, errorHandler func(w http.ResponseWriter, r *http.Request, status int, reason error)) {
 	upgrader := &websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 		Subprotocols:    []string{"websocket"},
-		Error:           ErrorHandler,
-		CheckOrigin:     CheckOrigin,
+		Error:           errorHandler,
+		CheckOrigin:     checkOrigin,
 	}
 
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		s, err := upgrader.Upgrade(w, r, nil)
 
-		if err != nil {
-			log.Printf("Could not upgrade connection: %s", err)
-			return
+		if err == nil {
+			onSocket(w, r, s)
 		}
-
-		onSocket(s, r)
 	})
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
@@ -39,5 +36,5 @@ func CheckOrigin(r *http.Request) bool {
 }
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request, status int, reason error) {
-	log.Printf("Error: %v %v", status, reason)
+	http.Error(w, reason.Error(), status)
 }
