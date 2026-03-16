@@ -14,6 +14,7 @@ export default defineConfig({
     outDir: 'dist/client',
   },
   server: {
-    port: 8032,
+    host: true,
+    port: 8001,
   },
 })

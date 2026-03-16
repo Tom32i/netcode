@@ -11,34 +11,21 @@ update:
 	npm update
 	go get -u all
 
-# Launch watcher
-watch:
-	npm run watch
-
-# Launch dev server
+# Launch client dev server
 start:
 	npm run start
 
+# Launch client watcher
+watch:
+	npm run watch
+
 # Build lib
-build: build-client build-server
-
-build-client:
+build:
 	npm run build
-
-build-server:
-	npm run node-build
-
-# Preview lib
-preview:
-	npm run preview
 
 # Launch NodeJS demo server
 server-node:
 	node ./demo/server.js 8002
-
-# Launch NodeJS demo server
-server-node-common: build
-	node ./demo/server.cjs 8002
 
 ## Launch Golang demo server
 server-go:
@@ -56,8 +43,8 @@ lint-go:
 # Test
 test: test-js test-go
 
-test-js: build
-	npx mocha
+test-js:
+	npm run test
 
 test-go:
 	go test ./go/...

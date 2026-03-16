@@ -1,13 +1,14 @@
-/* global netcode */
+import { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, BooleanCodec, StringLongCodec } from 'netcode/client';
+
 window.addEventListener('load', () => {
-    const { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, BooleanCodec, StringLongCodec } = netcode;
     const target = document.getElementById('output');
     const { info } = console;
 
     console.info = (message, ...subst) => {
         info(message, ...subst);
         subst.forEach(sub => message = message.replace('%s', sub));
-        output.innerText += message + '\n';
+        const time = Date.now() - start;
+        output.innerText += `▸ ${time}ms | ${message}\n`;
     }
 
     // Register your events
@@ -20,8 +21,13 @@ window.addEventListener('load', () => {
         ['total', new UInt8Codec()],
     ]);
 
+
+    const server = 'ws://127.0.0.1:8002';
+    const start = Date.now();
+    console.info('Connecting to %s', server)
+
     // Create the client
-    const client = new Client('ws://127.0.0.1:8002', encoder);
+    const client = new Client(server, encoder);
     let ping;
 
     // Listen for a "pong" event

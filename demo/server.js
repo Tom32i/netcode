@@ -5,7 +5,7 @@ import {
     UIntLongCodec,
     BooleanCodec,
     StringLongCodec,
-} from '../src/server/index.js';
+} from 'netcode/server';
 
 // Register your events
 const encoder = new BinaryEncoder([
