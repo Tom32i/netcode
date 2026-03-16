@@ -12,9 +12,8 @@ export default class Server extends EventEmitter {
      * @param {String} host Host to listen on
      * @param {JsonEncoder|BinaryEncoder} encoder Encoder to use to read/write event messages
      * @param {Number} pingInterval Ping frequency in seconds (0 for no ping)
-     * @param {Number} maxPayload Paquet max length in bit
+     * @param {Number} maxPayload Paquet max length in bit (should be a power of two)
      * @param {ClientDirectory} clients Clients directory
-     * @param {Reconnection} reconnection Auto reconnect handler
      * @param {Boolean} autoStart Auto start server on construct
      */
     constructor(
@@ -24,7 +23,6 @@ export default class Server extends EventEmitter {
         pingInterval = 30,
         maxPayload = Math.pow(2, 9),
         clients = new MapClientDirectory(),
-        // reconnection = new ReconnectionHandler(),
         autoStart = true
     ) {
         super();

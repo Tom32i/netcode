@@ -14,6 +14,6 @@ func (c Int16Codec) Encode(buffer *bytes.Buffer, data any) {
 
 func (c Int16Codec) Decode(buffer *bytes.Buffer) any {
 	var data int16
-	binary.Read(buffer, binary.BigEndian, data)
+	binary.Read(buffer, binary.BigEndian, &data)
 	return data
 }

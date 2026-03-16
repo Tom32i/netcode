@@ -25,7 +25,7 @@ And in the browser as well:
 ```html
 <body>
     <!-- Defines a netcode variable in global scope -->
-    <script src="node_modules/netcode/client.js"></script>
+    <script src="netcode.umd.cjs"></script>
     <script>
         const {
             Client,
@@ -39,51 +39,19 @@ And in the browser as well:
 </body>
 ```
 
-## Using the ES6 source code
+Or with module:
 
-Configure Webpack to include the source code of _netcode_ so that Babel will compile this ES6 code as well.
-
-```javascript
-module.exports = {
-    //...
-    module: {
-        rules: [{
+```html
+<body>
+    <script type="module">
+        import {
+            Client,
+            BinaryEncoder,
+            UInt16Codec,
+            BooleanCodec,
+            StringCodec,
             // ...
-            include: '/node_modules/netcode/src/',
-        }]
-    }
-};
-```
-
-_See a [full Webpack/Babel config example](doc/webpack.config.js)._
-
-Now you can import source file from _netcode_ directly in your sources and it will be compiled as well:
-
-```javascript
-// src/server.js
-import Server from 'netcode/src/server/Server';
-import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
-import { BooleanCodec } from 'netcode/src/encoder/codec';
-
-new Server(
-    8080,
-    'localhost',
-    new BinaryEncoder([
-        ['foo', new BooleanEncoder()]
-    ])
-);
-```
-
-```javascript
-// src/client.js
-import Client from 'netcode/src/client/Client';
-import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
-import { BooleanCodec } from 'netcode/src/encoder/codec';
-
-new Client(
-    'ws://localhost:8080',
-    new BinaryEncoder([
-        ['foo', new BooleanCodec()]
-    ])
-);
+        } from 'netcode/client';
+    </script>
+</body>
 ```

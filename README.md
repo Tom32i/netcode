@@ -8,10 +8,11 @@ Features:
 - ⚡️ Handle the binary encoding and decoding of your data, with performances in mind.
 - 📢 Listen for event dispatched over websocket with simple `on`/`off` event emitter system.
 - 💬 Fallback to JSON for easy debugging.
+- 🌟 **NEW**: [experimental Golang port available](doc/go.md)
 
 ## Requirements
 
-- Node >= v8.0.0
+- Node >= v24.0.0
 
 ## Installation
 
@@ -26,8 +27,7 @@ An event is defined by its _unique_ name and the corresponding codec, responsibl
 
 ```javascript
 // events.js
-import UInt8Codec from 'netcode/src/encoder/codec/UInt8Codec';
-import StringCodec from 'netcode/src/encoder/codec/StringCodec';
+import { UInt8Codec, StringCodec } from 'netcode/encoder';
 
 export default [
 	['id', new UInt8Codec()],
@@ -53,8 +53,7 @@ We setup a server specifying the port and host on which the server will listen a
 Here we use a BinaryEncoder to communicate in binary over websocket, with the previously configured event list.
 
 ```javascript
-import Server from 'netcode/src/server/Server';
-import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
+import { Server, BinaryEncoder } from 'netcode/server';
 import events from './events';
 
 // Listen on localhost:8080
@@ -68,15 +67,14 @@ server.on('client:join', client => {
 
 Now we've got a server running at `localhost:8080` that listen for a `say` text event and send a `id` integer event to every client that connects.
 
-_See an [full example of server setup](demo-server.js)._
+_See an [full example of server setup](demo/server.js)._
 
 ### Write a Client
 
 Now we write a client, for the browser, that connects to our running server on `ws://localhost:8080` and use a BinaryEncoder with the same event list as the server.
 
 ```javascript
-import Client from 'netcode/src/client/Client';
-import BinaryEncoder from 'netcode/src/encoder/BinaryEncoder';
+import { Client, BinaryEncoder } from 'netcode/client';
 import events from './events';
 
 const client = new Client('ws://localhost:8080', new BinaryEncoder(events))
@@ -91,7 +89,7 @@ Now we've got client that listen for the `id` event and sent a sentence in a `sa
 
 Connection is alive and well!
 
-_See an [full example of client setup](demo-client.js)._
+_See an [full example of client setup](demo/client.js)._
 
 ## Complete documentation
 

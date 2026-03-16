@@ -1,5 +1,6 @@
 import Codec from './Codec.js';
 import BooleanCodec from './BooleanCodec.js';
+import Float32Codec from './Float32Codec.js';
 import Float64Codec from './Float64Codec.js';
 import FloatPrecisionCodec from './FloatPrecisionCodec.js';
 import Int16Codec from './Int16Codec.js';
@@ -16,6 +17,7 @@ import UIntLongCodec from './UIntLongCodec.js';
 export {
     Codec,
     BooleanCodec,
+    Float32Codec,
     Float64Codec,
     FloatPrecisionCodec,
     Int16Codec,

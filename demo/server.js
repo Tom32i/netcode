@@ -3,6 +3,7 @@ import {
     BinaryEncoder,
     UInt8Codec,
     UIntLongCodec,
+    Int16Codec,
     BooleanCodec,
     StringLongCodec,
 } from 'netcode/server';
@@ -15,6 +16,7 @@ const encoder = new BinaryEncoder([
     ['inverse', new BooleanCodec()],
     ['greeting', new StringLongCodec()],
     ['total', new UInt8Codec()],
+    ['int16', new Int16Codec()],
 ]);
 
 // Create the server
@@ -47,10 +49,17 @@ server.on('client:join', client => {
         client.send('greeting', 'Hello, I\'m server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla.');
     });
 
+    // Listen for "int16" event
+    client.on('int16', message => {
+        console.info('Client %s sends int16: %s', client.id, message);
+    });
+
     // Send event "id" to the client
     client.send('id', client.id);
 
     broadcastTotal();
+
+    client.send('int16', 32767);
 });
 
 // Listen for disconnecting clients

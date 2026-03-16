@@ -1,4 +1,4 @@
-import { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, BooleanCodec, StringLongCodec } from 'netcode/client';
+import { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, Int16Codec, BooleanCodec, StringLongCodec } from 'netcode/client';
 
 window.addEventListener('load', () => {
     const target = document.getElementById('output');
@@ -19,6 +19,7 @@ window.addEventListener('load', () => {
         ['inverse', new BooleanCodec()],
         ['greeting', new StringLongCodec()],
         ['total', new UInt8Codec()],
+        ['int16', new Int16Codec()],
     ]);
 
 
@@ -51,6 +52,12 @@ window.addEventListener('load', () => {
         console.info(`There is ${total} people connected.`);
     });
 
+    // Listen for a "int16" event
+    client.on('int16', ({ detail: value }) => {
+        console.info(`int16 codec: ${value}.`);
+        client.send('int16', -32768);
+    });
+
     // Listen for an "inverse" event
     client.on('inverse', ({ detail: status }) => {
         // Answer with an "inverse" event
@@ -59,7 +66,6 @@ window.addEventListener('load', () => {
 
         // Send a "greeting" event
         client.send('greeting', 'Hello, I\'m client 😊! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla.');
-        // client.send('greeting', 'Hi!');
     });
 
     // Listen for a "greeting" event
@@ -70,7 +76,7 @@ window.addEventListener('load', () => {
     // Listen for oppening connection
     client.on('open', () => {
         console.info('Connection open.');
-        setTimeout(() => client.close(1000, 'All good :)'), 20 * 1000);
+        setTimeout(() => client.close(1000, 'All good :)'), 10 * 1000);
     });
 
     // Listen for connection close

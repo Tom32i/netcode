@@ -10,14 +10,20 @@ Packaged codecs are available in the `netcode/server` and `netcode/client` packa
 
 | Class                      | Data format                        | Example                                                      | Size (in byte)          |
 | -------------------------- | ---------------------------------- | ------------------------------------------------------------ | ----------------------- |
-| `Codec`                    | No data (just send the event name) | `['pause', new Codec()]`<br />`send('pause')`                | 0                       |
-| `BooleanCodec`             | `true\|false`                       | `['active', new BooleanCodec()]`<br />`send('active', true)` | 1                       |
-| `StringCodec`              | String up to 255 characters        | `['player:name', new StringCodec()]`<br />`send('player:name', 'DarkShadow73')` | 1 + (String length * 2) |
-| `StringLongCodec`          | String up to 65536 characters      | `['url', new StringLongCodec()]`<br />`send('url', 'https://my.long.url/hash/xxx...')` | 2 + (String length * 2) |
+| `NullCodec`                    | No data (just send the event name) | `['pause', new NullCodec()]`<br />`send('pause')`                | 0                       |
+| `BooleanCodec`             | `true\|false`                       | `['active', new BooleanCodec()]`<br />`send('active', true)` |                     |
 | `UInt8Codec`                | Integer from 0 to 255              | `['id', new UInt8Codec()]`<br />`send('id', 42)`              | 1                       |
 | `UInt16Codec`               | Integer from 0 to 65536            | `['score', new UInt16Codec()]`<br />`send('score', 9999)`     | 2                       |
 | `UInt32Codec`               | Integer from 0 to 4294967295       | `['position', new UInt32Codec()]`<br />`send('position', 4294967295)` | 4                       |
 | `UIntLongCodec(byteLength)` | Integer encoded as string          | `['timestamp', new UIntLongCodec(13)`]<br />`send('timestamp', Date.now())` | byteLength              |
+| `Int8Codec`                | Integer from -128 to 127              | `['value', new Int8Codec()]`<br />`send('value', -42)`              | 1                       |
+| `Int16Codec`               | Integer from -32768 to 32767            | `['malus', new Int16Codec()]`<br />`send('malus', -999)`     | 2                       |
+| `Int32Codec`               | Integer from -2147483648 to 2147483647       | `['position', new Int32Codec()]`<br />`send('position', -123456)` | 4                       |1                       |
+| `Float32Codec`<br />⚠ Subject to precision issues               | Float on 32bit     | `['position', new Float32Codec()]`<br />`send('position', 84.19999694824219)` | 4                       |
+| `Float64Codec`               | Float on 64bit           | `['position', new Float64Codec()]`<br />`send('position', -12456789.123456789087654321012345678901)`     | 2                       |
+| `FloatPrecisionCodec(IntCodec, precision)`               | Float encoded as int           | `['position', FloatPrecisionCodec(Int8Codec, 3)]`<br />`send('position', -0.657)`     | 2
+| `StringCodec`              | String up to 255 characters        | `['player:name', new StringCodec()]`<br />`send('player:name', 'DarkShadow73')` | 1 + (String length * 2) |
+| `StringLongCodec`          | String up to 65536 characters      | `['url', new StringLongCodec()]`<br />`send('url', 'https://my.long.url/hash/xxx...')` | 2 + (String length * 2) |
 
 ## Custom codecs
 

@@ -6,6 +6,7 @@ import JsonEncoder from '../encoder/JsonEncoder.js';
 import BinaryEncoder from '../encoder/BinaryEncoder.js';
 import Codec from '../encoder/codec/Codec.js';
 import BooleanCodec from '../encoder/codec/BooleanCodec.js';
+import Float32Codec from '../encoder/codec/Float32Codec.js';
 import Float64Codec from '../encoder/codec/Float64Codec.js';
 import FloatPrecisionCodec from '../encoder/codec/FloatPrecisionCodec.js';
 import Int16Codec from '../encoder/codec/Int16Codec.js';
@@ -28,6 +29,7 @@ export {
     BinaryEncoder,
     Codec,
     BooleanCodec,
+    Float32Codec,
     Float64Codec,
     FloatPrecisionCodec,
     Int16Codec,

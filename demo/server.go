@@ -21,85 +21,88 @@ func main() {
 
 	encoder := netcode.CreateBinaryEncoder([]*netcode.RegisteredCodec{
 		{0, "id", netcode.UInt8Codec{}},
-		{1, "ping", netcode.UIntLongCodec{6}},
-		{2, "pong", netcode.UIntLongCodec{6}},
-		{3, "inverse", netcode.BooleanCodec{}},
-		{4, "greeting", netcode.StringLongCodec{}},
-		{5, "total", netcode.UInt8Codec{}},
+		{0, "ping", netcode.UIntLongCodec{6}},
+		{0, "pong", netcode.UIntLongCodec{6}},
+		{0, "inverse", netcode.BooleanCodec{}},
+		{0, "greeting", netcode.StringLongCodec{}},
+		{0, "total", netcode.UInt8Codec{}},
+		{0, "int16", netcode.Int16Codec{}},
 	}, netcode.UInt8Codec{})
 
-	demo := Demo{
+	d := Demo{
 		netcode.CreateSockets(encoder, uint(math.Pow(2, 8))),
 	}
 
-	go demo.run()
+	go d.run()
 
-	netcode.Start(*port, "/", func(conn *websocket.Conn, request *http.Request) {
-		socket, err := demo.sockets.Add(conn)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		netcode.CreateBeacon(socket, time.Second*3, func(ping time.Duration) {
-			log.Printf("Client #%d ping: %s.", socket.ID, ping)
-		})
-
-		demo.onClientJoin(socket)
-	})
+	netcode.Start(*port, "/", d.SocketHandler, netcode.CheckOrigin, netcode.ErrorHandler)
 }
 
-func (demo *Demo) run() {
+func (d *Demo) SocketHandler(w http.ResponseWriter, r *http.Request, c *websocket.Conn) {
+	socket, err := d.sockets.Add(c)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	netcode.CreateBeacon(socket, time.Second*3, func(ping time.Duration) {
+		log.Printf("Client #%d ping: %s.", socket.ID, ping)
+	})
+
+	d.onClientJoin(socket)
+}
+
+func (d *Demo) run() {
 	log.Printf("Demo is running")
 	for {
 		select {
-		case m := <-demo.sockets.In:
+		case m := <-d.sockets.In:
 			switch m.Message.Name {
 			case "ping":
-				demo.handlePing(m.Socket, m.Message)
+				d.handlePing(m.Socket, m.Message)
 			case "greeting":
-				demo.handleGreeting(m.Socket, m.Message)
+				d.handleGreeting(m.Socket, m.Message)
+			case "int16":
+				d.handleInt16(m.Socket, m.Message)
 			default:
 				log.Printf("[socket #%d] '%s': %v", m.Socket.ID, m.Message.Name, m.Message.Data)
 			}
-		case socket := <-demo.sockets.Out:
-			demo.onClientLeave(socket)
-			// switch e.Name {
-			// case "socket:join":
-			// 	demo.onClientJoin(e.Data.(*netcode.Socket))
-			// case "socket:leave":
-			// 	demo.onClientLeave(e.Data.(*netcode.Socket))
-			// default:
-			// 	log.Printf("event '%s': %v", e.Name, e.Data)
-			// }
+		case socket := <-d.sockets.Out:
+			d.onClientLeave(socket)
 		}
 	}
 }
 
-func (demo *Demo) broadcastTotal() {
-	demo.sockets.SendAll(
-		&netcode.Message{"total", uint8(demo.sockets.Count())},
+func (d *Demo) broadcastTotal() {
+	d.sockets.SendAll(
+		&netcode.Message{"total", uint8(d.sockets.Count())},
 	)
 }
 
-func (demo *Demo) onClientJoin(s *netcode.Socket) {
+func (d *Demo) onClientJoin(s *netcode.Socket) {
 	log.Printf("Client #%d joined.", s.ID)
 	s.Send(&netcode.Message{"id", uint8(s.ID)})
-	demo.broadcastTotal()
+	d.broadcastTotal()
+
+	s.Send(&netcode.Message{"int16", int16(math.MaxInt16)})
 }
 
-func (demo *Demo) onClientLeave(s *netcode.Socket) {
+func (d *Demo) onClientLeave(s *netcode.Socket) {
 	log.Printf("Client #%d left.", s.ID)
-	demo.broadcastTotal()
+	d.broadcastTotal()
 }
 
-func (demo *Demo) handlePing(s *netcode.Socket, m *netcode.Message) {
-	log.Printf("Client #%d ping: %d.", s.ID, m.Data)
+func (d *Demo) handlePing(s *netcode.Socket, m *netcode.Message) {
+	log.Printf("Client #%d ping: %d.", s.ID, m.Data.(uint))
 	s.Send(&netcode.Message{"pong", uint(time.Now().UnixMilli())})
 	s.Send(&netcode.Message{"inverse", true})
 }
 
-func (demo *Demo) handleGreeting(s *netcode.Socket, m *netcode.Message) {
-	log.Printf("Client #%d greets you: '%s'.", s.ID, m.Data)
+func (d *Demo) handleGreeting(s *netcode.Socket, m *netcode.Message) {
+	log.Printf("Client #%d greets you: '%s'.", s.ID, m.Data.(string))
 	s.Send(&netcode.Message{"greeting", "Hello, I'm server! 😊 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut imperdiet molestie libero, ut sollicitudin tortor dignissim quis. Nulla iaculis nisi turpis, a malesuada nibh faucibus a. Nunc tellus lorem, varius sit amet tellus eu, dictum consectetur nulla."})
+}
+
+func (d *Demo) handleInt16(s *netcode.Socket, m *netcode.Message) {
+	log.Printf("Client #%d sends int16: %d.", s.ID, m.Data.(int16))
 }
