@@ -6,7 +6,7 @@ import (
 )
 
 /**
- *  16 bit unsigned Int codec (0 to 65535)
+ *  16 bit unsigned Int codec (from 0 to 65535)
  */
 type UInt16Codec struct {
 }

@@ -1,4 +1,4 @@
-import EventEmitter from 'tom32i-event-emitter.js';
+import EventEmitter from 'tom32i-event-emitter.js/EventEmitter.js';
 import JsonEncoder from '../encoder/JsonEncoder.js';
 
 export default class Client extends EventEmitter {
