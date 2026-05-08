@@ -8,7 +8,7 @@ Features:
 - ⚡️ Handle the binary encoding and decoding of your data, with performances in mind.
 - 📢 Listen for event dispatched over websocket with simple `on`/`off` event emitter system.
 - 💬 Fallback to JSON for easy debugging.
-- 🌟 **NEW**: [experimental Golang port available](doc/go.md)
+- 🌟 **NEW**: [Golang port available](doc/go.md)
 
 ## Requirements
 
