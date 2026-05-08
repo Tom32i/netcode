@@ -3,23 +3,20 @@
  */
 export default class Beacon {
     /**
-     * @param {Socket} socket
+     * @param {Client} client
      * @param {Number} frequency Frequency in second
      */
-    constructor(socket, frequency = 30) {
-        this.socket = socket;
+    constructor(client, emit, frequency = 30) {
+        this.client = client;
+        this.socket = client.socket;
+        this.emit = emit;
         this.frequency = frequency * 1000;
         this.interval = null;
-        this.alive = true;
 
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
-        this.ping = this.ping.bind(this);
-        this.onPing = this.onPing.bind(this);
+        this.sendPing = this.sendPing.bind(this);
         this.onPong = this.onPong.bind(this);
-
-        this.socket.on('pong', this.onPong);
-        this.socket.on('close', this.stop);
 
         if (this.socket.readyState === 1) {
             this.start();
@@ -32,8 +29,13 @@ export default class Beacon {
      * Start ping interval
      */
     start() {
-        if (!this.interval) {
-            this.interval = setInterval(this.ping, this.frequency);
+        this.socket.off('open', this.start);
+
+        if (this.interval === null) {
+            this.socket.on('pong', this.onPong);
+            this.socket.on('close', this.stop);
+            this.interval = setInterval(this.sendPing, this.frequency);
+            setImmediate(this.sendPing);
         }
     }
 
@@ -41,34 +43,27 @@ export default class Beacon {
      * Stop ping interval
      */
     stop() {
-        if (this.interval) {
+        if (this.interval !== null) {
             clearInterval(this.interval);
             this.interval = null;
+            this.socket.off('pong', this.onPong);
+            this.socket.off('close', this.stop);
         }
     }
 
     /**
-     * Ping
+     * Send ping
      */
-    ping() {
-        if (!this.alive) {
-            return this.socket.terminate();
-        }
-
-        this.alive = false;
-        this.socket.ping(this.onPing);
+    sendPing() {
+        this.socket.ping(performance.now());
     }
-
     /**
-     * On ping
+     * Receive pong
      */
-    onPing() {
-    }
+    onPong(buffer) {
+        const now = performance.now();
+        const ping = parseFloat(buffer.toString());
 
-    /**
-     * On pong
-     */
-    onPong() {
-        this.alive = true;
+        this.emit('pong', { client: this.client, duration: now - ping });
     }
 }

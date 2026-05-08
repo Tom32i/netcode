@@ -4,7 +4,8 @@
  * Re-use ids after client disconnection.
  */
 export default class MapClientDirectory {
-    constructor() {
+    constructor(max = Math.pow(2, 16)) {
+        this.max = max;
         this.clients = new Map();
     }
 
@@ -23,13 +24,13 @@ export default class MapClientDirectory {
      * @return {Number|String}
      */
     generateId() {
-        let id = 1;
-
-        while (this.clients.has(id)) {
-            id++;
+        for (let id = 0; id < this.max; id++) {
+            if (!this.clients.has(id)) {
+                return id;
+            }
         }
 
-        return id;
+        throw new Error(`Max clients reached ${this.max}.`);
     }
 
     /**
@@ -38,10 +39,7 @@ export default class MapClientDirectory {
      * @param {Client} client
      */
     add(client) {
-        if (!client.id) {
-            client.id = this.generateId();
-        }
-
+        client.id = this.generateId();
         this.clients.set(client.id, client);
     }
 
