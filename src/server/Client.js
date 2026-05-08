@@ -35,15 +35,6 @@ export default class Client extends EventEmitter {
     }
 
     /**
-     * Set id
-     *
-     * @param {Number|String} id
-     */
-    setId(id) {
-        this.id = id;
-    }
-
-    /**
      * Send a message
      *
      * @param {String} name
@@ -98,7 +89,7 @@ export default class Client extends EventEmitter {
     /**
      * On close
      */
-    onClose() {
+    onClose(data) { // eslint-disable-line no-unused-vars
         this.socket = null;
         this.emit('close', this);
     }

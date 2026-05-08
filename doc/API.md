@@ -9,9 +9,10 @@ The `Server` class takes the following arguments:
 | port      | _Number_                       | 8080              | Port to listen on.                                   |
 | host      | _String_                       | 0.0.0.0           | Host to listen on.                                   |
 | encoder   | _BinaryEncoder \| JsonEncoder_ | new JsonEncoder() | Encoder to use to read/write event messages.         |
-| ping      | _Number_                       | 30                | Ping frequency in seconds (0 for no ping).           |
-| maxLength | _Number_                       | 512               | Paquet max length in bit (should be a power of two). |
-| protocols | _Array String[]_               | `['websocket']`   | Protocols tu use                                     |
+| pingInterval      | _Number_                       | 30                | Ping frequency in seconds (0 for no ping).           |
+| maxPayload | _Number_                       | 512               | Paquet max length in bit (should be a power of two). |
+| clients | _ClientDirectory_               | `new MapClientDirectory()`   | Client directory                                    |
+| autoStart | _Boolean_               | `true`   | Should the server start listening immediatly?                                    |
 
 ### Methods
 
@@ -26,8 +27,6 @@ Listen for event.
 #### off(name, callback)
 
 Remove listener for this event / callback.
-
-_Note: If you're on node `< 10.0.0`, use `removeListener` method instead of `off`_
 
 ### Events
 

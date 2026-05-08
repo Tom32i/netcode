@@ -1,6 +1,6 @@
 {
   "name": "netcode",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "NetCode for web video games",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (https://thomas.jarrand.fr)",
   "license": "MIT",
@@ -14,34 +14,49 @@
     "multiplayer"
   ],
   "scripts": {
-    "watch": "webpack --watch --mode=development",
-    "build": "webpack --mode=production",
-    "test": "mocha",
+    "start": "vite",
+    "watch": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest --run",
     "lint": "eslint src/* --ext .js,.json --fix"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=24.0.0"
   },
   "files": [
-    "src/*",
-    "client.js",
-    "server.js"
+    "src",
+    "dist"
   ],
+  "type": "module",
+  "main": "./dist/client/netcode.umd.cjs",
+  "module": "./dist/client/netcode.js",
+  "exports": {
+    ".": {
+      "import": "./dist/client/netcode.js",
+      "require": "./dist/client/netcode.umd.cjs"
+    },
+    "./server": {
+      "import": "./src/server/index.js"
+    },
+    "./client": {
+      "import": "./src/client/index.js"
+    },
+    "./encoder": {
+      "import": "./src/encoder/index.js"
+    }
+  },
   "dependencies": {
-    "tom32i-event-emitter.js": "^2.0.5",
-    "ws": "^8.2.0"
+    "tom32i-event-emitter.js": "^2.2.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.0",
-    "babel-loader": "^8.2.2",
-    "eslint": "^7.26.0",
-    "mocha": "^10.2.0",
-    "webpack": "^5.36.0",
-    "webpack-cli": "^4.6.0"
+    "eslint": "^9.14.0",
+    "globals": "^15.11.0",
+    "vite": "^7.1.3",
+    "vitest": "^4.1.0"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.7",
-    "utf-8-validate": "^5.0.10"
+    "bufferutil": "^4.1.0",
+    "utf-8-validate": "^6.0.6"
   }
 }
