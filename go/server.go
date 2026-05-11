@@ -2,25 +2,22 @@ package netcode
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
+	"github.com/coder/websocket"
 	"log"
 	"net/http"
 )
 
-func Start(port int, path string, onSocket func(w http.ResponseWriter, r *http.Request, c *websocket.Conn), checkOrigin func(r *http.Request) bool, errorHandler func(w http.ResponseWriter, r *http.Request, status int, reason error)) {
-	upgrader := &websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		Subprotocols:    []string{"websocket"},
-		Error:           errorHandler,
-		CheckOrigin:     checkOrigin,
-	}
+type Conn = websocket.Conn
+type AcceptOptions = websocket.AcceptOptions
 
+func Start(port int, path string, onSocket func(w http.ResponseWriter, r *http.Request, c *Conn), o *AcceptOptions) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		s, err := upgrader.Upgrade(w, r, nil)
+		s, err := websocket.Accept(w, r, o)
 
 		if err == nil {
 			onSocket(w, r, s)
+		} else {
+			log.Printf("Error: %s", err)
 		}
 	})
 
@@ -29,12 +26,4 @@ func Start(port int, path string, onSocket func(w http.ResponseWriter, r *http.R
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func CheckOrigin(r *http.Request) bool {
-	return true
-}
-
-func ErrorHandler(w http.ResponseWriter, r *http.Request, status int, reason error) {
-	http.Error(w, reason.Error(), status)
 }

@@ -1,18 +1,19 @@
 package netcode
 
 import (
-	"github.com/gorilla/websocket"
-	"log"
-	"sync"
-	"time"
+	"context"
+	"github.com/coder/websocket"
 )
+
+func CreateSocket(id uint, c *websocket.Conn, encoder *BinaryEncoder, in chan SocketMessage) *Socket {
+	return &Socket{id, c, encoder, in}
+}
 
 type Socket struct {
 	ID      uint
-	In      chan SocketMessage
 	Conn    *websocket.Conn
 	Encoder *BinaryEncoder
-	mu      sync.Mutex
+	In      chan SocketMessage
 }
 
 type SocketMessage struct {
@@ -30,46 +31,31 @@ func (s *Socket) Send(message *Message) {
 }
 
 func (s *Socket) Write(data []byte) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.Conn.WriteMessage(websocket.BinaryMessage, data)
+	s.Conn.Write(context.Background(), websocket.MessageBinary, data)
 }
 
-func (s *Socket) Ping(message string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.Conn.WriteControl(websocket.PingMessage, []byte(message), time.Now().Add(time.Second*5))
+func (s *Socket) Ping() error {
+	return s.Conn.Ping(context.Background())
 }
 
-func (s *Socket) Pong(message string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.Conn.WriteControl(websocket.PongMessage, []byte(message), time.Now().Add(time.Second*5))
-}
-
-func (s *Socket) Close(code int, message string) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.Conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(code, message), time.Now().Add(time.Second*5))
+func (s *Socket) Close(code int, reason string) error {
+	return s.Conn.Close(websocket.StatusCode(code), reason)
 }
 
 func (s *Socket) Run(onClose func(*Socket)) {
 	defer func() {
-		s.Conn.Close()
+		s.Close(int(websocket.StatusNormalClosure), "Done.")
 		onClose(s)
 	}()
 
 	for {
-		_, data, err := s.Conn.ReadMessage()
+		_, data, err := s.Conn.Read(context.Background())
 
 		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
-				log.Printf("Socket closed unexpectedly: %v", err)
-			}
 			return
 		}
 
-		go s.Handle(data)
+		s.Handle(data)
 	}
 }
 
