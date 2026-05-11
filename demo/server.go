@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	netcode "github.com/Tom32i/netcode/go"
-	"github.com/gorilla/websocket"
 	"log"
 	"math"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 
 type Demo struct {
 	sockets *netcode.Sockets
+	beacons map[*netcode.Socket]*netcode.Beacon
 }
 
 func main() {
@@ -30,23 +30,27 @@ func main() {
 	}, netcode.UInt8Codec{})
 
 	d := Demo{
-		netcode.CreateSockets(encoder, uint(math.Pow(2, 8))),
+		netcode.CreateSockets(encoder, uint(math.Pow(2, 8)), 1),
+		make(map[*netcode.Socket]*netcode.Beacon),
 	}
 
 	go d.run()
 
-	netcode.Start(*port, "/", d.SocketHandler, netcode.CheckOrigin, netcode.ErrorHandler)
+	netcode.Start(*port, "/", d.SocketHandler, &netcode.AcceptOptions{
+		InsecureSkipVerify: true,
+		Subprotocols:       []string{"websocket"},
+	})
 }
 
-func (d *Demo) SocketHandler(w http.ResponseWriter, r *http.Request, c *websocket.Conn) {
+func (d *Demo) SocketHandler(w http.ResponseWriter, r *http.Request, c *netcode.Conn) {
 	socket, err := d.sockets.Add(c)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	netcode.CreateBeacon(socket, time.Second*3, func(ping time.Duration) {
-		log.Printf("Client #%d ping: %s.", socket.ID, ping)
+	d.beacons[socket] = netcode.CreateBeacon(socket, time.Second*3, func(ping time.Duration) {
+		log.Printf("Client #%d ping: %v.", socket.ID, ping)
 	})
 
 	d.onClientJoin(socket)
@@ -90,6 +94,8 @@ func (d *Demo) onClientJoin(s *netcode.Socket) {
 func (d *Demo) onClientLeave(s *netcode.Socket) {
 	log.Printf("Client #%d left.", s.ID)
 	d.broadcastTotal()
+	d.beacons[s].Destroy()
+	delete(d.beacons, s)
 }
 
 func (d *Demo) handlePing(s *netcode.Socket, m *netcode.Message) {

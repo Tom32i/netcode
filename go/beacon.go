@@ -1,7 +1,6 @@
 package netcode
 
 import (
-	"strconv"
 	"sync"
 	"time"
 )
@@ -17,9 +16,7 @@ func CreateBeacon(socket *Socket, interval time.Duration, callback func(time.Dur
 
 	b.ticker.Stop()
 
-	socket.Conn.SetPongHandler(b.onPong)
-
-	defer b.start()
+	defer b.Start()
 
 	return &b
 }
@@ -35,21 +32,21 @@ type Beacon struct {
 	running  bool
 }
 
-func (b *Beacon) start() {
+func (b *Beacon) Start() {
 	if !b.running {
 		go b.run()
 		b.sendPing()
 	}
 }
 
-func (b *Beacon) stop() {
+func (b *Beacon) Stop() {
 	if b.running {
 		b.done <- true
 	}
 }
 
-func (b *Beacon) destroy() {
-	b.stop()
+func (b *Beacon) Destroy() {
+	b.Stop()
 	close(b.done)
 }
 
@@ -69,15 +66,11 @@ func (b *Beacon) run() {
 }
 
 func (b *Beacon) sendPing() {
-	b.socket.Ping(strconv.FormatInt(time.Now().UnixMicro(), 10))
-}
+	ping := time.Now()
+	err := b.socket.Ping()
+	pong := time.Now()
 
-func (b *Beacon) onPong(response string) error {
-	now := time.Now()
-	value, _ := strconv.ParseInt(response, 10, 64)
-	ping := time.UnixMicro(value)
-
-	defer b.callback(now.Sub(ping))
-
-	return nil
+	if err == nil {
+		b.callback(pong.Sub(ping))
+	}
 }
