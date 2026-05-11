@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	netcode "github.com/Tom32i/netcode/go"
+	netcode "github.com/Tom32i/netcode/v3/go"
 	"log"
 	"math"
 	"net/http"
