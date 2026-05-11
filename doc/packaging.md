@@ -1,26 +1,26 @@
 # Note on packaging
 
-Netcode provides you with 2 pre-packaged versions of the library for _Node_ and for the _browser_, so you can use it out of the box.
-You can also _import the ES6 source code_ directly and manage the packaging yourself with a tool like Webpack.
+Netcode ships two pre-packaged versions of the library — one for _Node_ and one for the _browser_ — so you can use it out of the box.
+You can also _import the ES module source code_ directly and manage the packaging yourself with a tool like Vite or webpack.
 
-Let's see an example of both these setups:
+Let's see an example of both setups:
 
 ## Using the pre-packaged libraries
 
-On the server-side (node):
+On the server side (Node, ES modules):
 
 ```javascript
-const {
+import {
     Server,
     BinaryEncoder,
     UInt16Codec,
     BooleanCodec,
     StringCodec,
     // ...
-} = require('netcode/server');`
+} from 'netcode/server';
 ```
 
-And in the browser as well:
+And in the browser:
 
 ```html
 <body>
@@ -39,7 +39,7 @@ And in the browser as well:
 </body>
 ```
 
-Or with module:
+Or with ES modules:
 
 ```html
 <body>

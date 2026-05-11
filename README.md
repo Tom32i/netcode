@@ -8,7 +8,7 @@ Features:
 - ⚡️ Handle the binary encoding and decoding of your data, with performances in mind.
 - 📢 Listen for event dispatched over websocket with simple `on`/`off` event emitter system.
 - 💬 Fallback to JSON for easy debugging.
-- 🌟 **NEW**: [Golang port available](doc/go.md)
+- 🐹 [Golang server port available](doc/go.md), wire-compatible with the JavaScript client.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ Features:
 
 ### Define a list of events
 
-The server and the client __must__ share the same events.
+The server and the client __must__ share the same ordered list of events.
 An event is defined by its _unique_ name and the corresponding codec, responsible for encoding and decoding the data.
 
 ```javascript
@@ -40,12 +40,12 @@ In this example, the event list define how to send the following events over web
 - `client.send('id', 255);`
 - `client.send('say', 'Hello world!');`
 
-Then you'll be able to listen to this events on the client as follow:
+Then you'll be able to listen for these events on the client as follow:
 
 - `client.on('id', id => { /* Do something */ });`
 - `client.on('say', sentence => { /* Do something */ });`
 
-Now let's create a server and an client that use this event list.
+Now let's create a server and a client that use this event list.
 
 ### Setup a Server
 
@@ -65,9 +65,9 @@ server.on('client:join', client => {
 });
 ```
 
-Now we've got a server running at `localhost:8080` that listen for a `say` text event and send a `id` integer event to every client that connects.
+Now we've got a server running at `localhost:8080` that listens for a `say` text event and sends an `id` integer event to every client that connects.
 
-_See an [full example of server setup](demo/server.js)._
+_See a [full example of server setup](demo/server.js)._
 
 ### Write a Client
 
@@ -85,17 +85,18 @@ client.on('open', () => {
 });
 ```
 
-Now we've got client that listen for the `id` event and sent a sentence in a `say` event.
+Now we've got a client that listens for the `id` event and sends a sentence in a `say` event.
 
 Connection is alive and well!
 
-_See an [full example of client setup](demo/client.js)._
+_See a [full example of client setup](demo/client.js)._
 
 ## Complete documentation
 
 To go further, see in-depth documentation and how-to's.
 
 - [Full API reference](doc/API.md).
-- [Default codecs and how-to write your own](doc/codecs.md).
-- [About packaging and setting up your own webpack configuration](doc/packaging.md).
+- [Default codecs and how to write your own](doc/codecs.md).
+- [About packaging and setting up your own bundler configuration](doc/packaging.md).
 - [Use netcode over a custom domain name and/or secured SSL connection](doc/ssl.md).
+- [Run a Netcode server in Go](doc/go.md).
