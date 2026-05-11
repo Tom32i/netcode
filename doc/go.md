@@ -15,4 +15,4 @@ It's fully compatible with the netcode browser client.
 
 ## Notes
 
-Netcode in golang is relying on [github.com/gorilla/websocket](github.com/gorilla/websocket) for Websocket implementation.
+Netcode in golang is relying on [github.com/coder/websocket](github.com/coder/websocket) for Websocket implementation.

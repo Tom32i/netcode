@@ -2,18 +2,18 @@ package netcode
 
 import (
 	"errors"
-	"github.com/gorilla/websocket"
+	"github.com/coder/websocket"
 	"log"
 	"sync"
 )
 
-func CreateSockets(encoder *BinaryEncoder, max uint) *Sockets {
+func CreateSockets(encoder *BinaryEncoder, maxId uint, inBufferSize int) *Sockets {
 	return &Sockets{
 		Encoder: encoder,
-		In:      make(chan SocketMessage),
-		Out:     make(chan *Socket),
+		In:      make(chan SocketMessage, inBufferSize),
+		Out:     make(chan *Socket, 1),
 		List:    make(map[uint]*Socket),
-		max:     max,
+		maxId:   maxId,
 	}
 }
 
@@ -22,12 +22,12 @@ type Sockets struct {
 	In      chan SocketMessage
 	Out     chan *Socket
 	List    map[uint]*Socket
-	max     uint
+	maxId   uint
 	mu      sync.RWMutex
 }
 
 func (ss *Sockets) generateId() (uint, error) {
-	for id := uint(0); id < ss.max; id++ {
+	for id := uint(0); id < ss.maxId; id++ {
 		ss.mu.RLock()
 		_, ok := ss.List[id]
 		ss.mu.RUnlock()
@@ -47,12 +47,7 @@ func (ss *Sockets) Add(c *websocket.Conn) (*Socket, error) {
 		return nil, err
 	}
 
-	socket := &Socket{
-		ID:      id,
-		Conn:    c,
-		Encoder: ss.Encoder,
-		In:      ss.In,
-	}
+	socket := CreateSocket(id, c, ss.Encoder, ss.In)
 
 	ss.mu.Lock()
 	ss.List[socket.ID] = socket
