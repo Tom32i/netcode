@@ -28,8 +28,8 @@ type Sockets struct {
 	mu          sync.RWMutex
 }
 
-// SetReadTimeout sets the read deadline applied to every socket created from
-// here on. Zero (the default) disables the deadline.
+// SetReadTimeout sets the read deadline applied to sockets created after it.
+// Zero (the default) disables the deadline.
 func (ss *Sockets) SetReadTimeout(d time.Duration) {
 	ss.readTimeout = d
 }

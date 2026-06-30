@@ -24,8 +24,8 @@ type SocketMessage struct {
 	Err     error
 }
 
-// SetReadTimeout bounds how long Run waits for an incoming message before
-// treating the connection as dead. Zero (the default) disables the deadline.
+// SetReadTimeout bounds how long Run waits for a message before closing the
+// connection. Zero (the default) disables the deadline.
 func (s *Socket) SetReadTimeout(d time.Duration) {
 	s.readTimeout = d
 }
@@ -42,14 +42,11 @@ func (s *Socket) Write(data []byte) {
 	s.Conn.Write(context.Background(), websocket.MessageBinary, data)
 }
 
-// Ping sends a ping frame and waits for the pong, blocking until it arrives or
-// the connection fails. Prefer PingContext to bound the wait.
 func (s *Socket) Ping() error {
 	return s.Conn.Ping(context.Background())
 }
 
-// PingContext sends a ping frame and waits for the pong, returning early if ctx
-// is cancelled or its deadline elapses.
+// PingContext waits for the pong, returning early if ctx is cancelled.
 func (s *Socket) PingContext(ctx context.Context) error {
 	return s.Conn.Ping(ctx)
 }
@@ -58,9 +55,7 @@ func (s *Socket) Close(code int, reason string) error {
 	return s.Conn.Close(websocket.StatusCode(code), reason)
 }
 
-// CloseNow closes the connection immediately without a close handshake. Use it
-// for a peer already known to be unresponsive, where waiting for a handshake
-// reply would only stall.
+// CloseNow closes immediately, without a close handshake.
 func (s *Socket) CloseNow() error {
 	return s.Conn.CloseNow()
 }
@@ -84,8 +79,6 @@ func (s *Socket) Run(onClose func(*Socket)) {
 	}
 }
 
-// readContext returns the context governing a single Read: bounded by
-// readTimeout when set, otherwise a plain cancellable background context.
 func (s *Socket) readContext() (context.Context, context.CancelFunc) {
 	if s.readTimeout <= 0 {
 		return context.WithCancel(context.Background())

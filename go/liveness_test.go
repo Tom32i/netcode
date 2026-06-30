@@ -117,18 +117,12 @@ func TestBeaconStartStop(t *testing.T) {
 	}
 	b.ticker.Stop()
 
-	b.mu.Lock()
-	b.running = true
-	b.mu.Unlock()
+	b.running.Store(true)
 	go b.run()
 
 	b.Stop()
 
-	b.mu.RLock()
-	running := b.running
-	b.mu.RUnlock()
-
-	if running {
+	if b.running.Load() {
 		t.Fatal("beacon still marked running after Stop")
 	}
 
