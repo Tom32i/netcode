@@ -1,6 +1,7 @@
 package netcode
 
 import (
+	"context"
 	"sync"
 	"time"
 )
@@ -10,8 +11,9 @@ func CreateBeacon(socket *Socket, interval time.Duration, callback func(time.Dur
 		socket:   socket,
 		callback: callback,
 		interval: interval,
+		timeout:  interval,
 		ticker:   time.NewTicker(interval),
-		done:     make(chan bool),
+		done:     make(chan bool, 1),
 	}
 
 	b.ticker.Stop()
@@ -25,33 +27,53 @@ type Beacon struct {
 	socket   *Socket
 	callback func(time.Duration)
 	interval time.Duration
+	timeout  time.Duration
 	ticker   *time.Ticker
 	done     chan bool
-	ping     time.Time
 	mu       sync.RWMutex
 	running  bool
 }
 
 func (b *Beacon) Start() {
-	if !b.running {
-		go b.run()
-		b.sendPing()
+	b.mu.Lock()
+	if b.running {
+		b.mu.Unlock()
+		return
 	}
+	b.running = true
+	b.mu.Unlock()
+
+	go b.run()
+	b.sendPing()
 }
 
 func (b *Beacon) Stop() {
-	if b.running {
-		b.done <- true
+	b.mu.Lock()
+	if !b.running {
+		b.mu.Unlock()
+		return
 	}
+	b.running = false
+	b.mu.Unlock()
+
+	// done is buffered (cap 1) so this never blocks, even while run() is parked
+	// inside a ping waiting for the timeout.
+	b.done <- true
 }
 
 func (b *Beacon) Destroy() {
 	b.Stop()
-	close(b.done)
 }
 
 func (b *Beacon) run() {
 	defer b.ticker.Stop()
+	defer func() {
+		// Clear running on any exit (including the ping-failure path below) so a
+		// later Start can restart the beacon.
+		b.mu.Lock()
+		b.running = false
+		b.mu.Unlock()
+	}()
 
 	b.ticker.Reset(b.interval)
 
@@ -60,17 +82,33 @@ func (b *Beacon) run() {
 		case <-b.done:
 			return
 		case <-b.ticker.C:
-			b.sendPing()
+			if !b.sendPing() {
+				return
+			}
 		}
 	}
 }
 
-func (b *Beacon) sendPing() {
-	ping := time.Now()
-	err := b.socket.Ping()
-	pong := time.Now()
+// sendPing pings the client and waits up to timeout for the pong. A successful
+// pong reports the round-trip latency. A failure (timeout or dead connection)
+// closes the socket so the read loop unblocks and the disconnect is detected,
+// and returns false to stop the beacon. This is what evicts silently-dropped
+// connections (closed laptop, lost wifi) that never send a close frame.
+func (b *Beacon) sendPing() bool {
+	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
+	defer cancel()
 
-	if err == nil {
-		b.callback(pong.Sub(ping))
+	start := time.Now()
+	err := b.socket.PingContext(ctx)
+
+	if err != nil {
+		// The peer is unresponsive: close immediately rather than attempting a
+		// handshake it will never answer, so the read loop unblocks at once.
+		b.socket.CloseNow()
+		return false
 	}
+
+	b.callback(time.Since(start))
+
+	return true
 }

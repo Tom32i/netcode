@@ -5,6 +5,7 @@ import (
 	"github.com/coder/websocket"
 	"log"
 	"sync"
+	"time"
 )
 
 func CreateSockets(encoder *BinaryEncoder, maxId uint, inBufferSize int) *Sockets {
@@ -18,12 +19,19 @@ func CreateSockets(encoder *BinaryEncoder, maxId uint, inBufferSize int) *Socket
 }
 
 type Sockets struct {
-	Encoder *BinaryEncoder
-	In      chan SocketMessage
-	Out     chan *Socket
-	List    map[uint]*Socket
-	maxId   uint
-	mu      sync.RWMutex
+	Encoder     *BinaryEncoder
+	In          chan SocketMessage
+	Out         chan *Socket
+	List        map[uint]*Socket
+	maxId       uint
+	readTimeout time.Duration
+	mu          sync.RWMutex
+}
+
+// SetReadTimeout sets the read deadline applied to every socket created from
+// here on. Zero (the default) disables the deadline.
+func (ss *Sockets) SetReadTimeout(d time.Duration) {
+	ss.readTimeout = d
 }
 
 func (ss *Sockets) generateId() (uint, error) {
@@ -48,6 +56,7 @@ func (ss *Sockets) Add(c *websocket.Conn) (*Socket, error) {
 	}
 
 	socket := CreateSocket(id, c, ss.Encoder, ss.In)
+	socket.SetReadTimeout(ss.readTimeout)
 
 	ss.mu.Lock()
 	ss.List[socket.ID] = socket
