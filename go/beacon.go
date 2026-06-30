@@ -73,9 +73,8 @@ func (b *Beacon) run() {
 	}
 }
 
-// sendPing pings the client and waits up to timeout for the pong. On failure the
-// peer is unresponsive, so close now (no handshake) to unblock the read loop and
-// surface the disconnect, and stop the beacon.
+// sendPing pings the client and waits up to timeout for the pong.
+// On failure the peer is unresponsive, so close now (no handshake).
 func (b *Beacon) sendPing() bool {
 	ctx, cancel := context.WithTimeout(context.Background(), b.timeout)
 	defer cancel()
