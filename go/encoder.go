@@ -59,7 +59,15 @@ func (e BinaryEncoder) Encode(message *Message) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func (e BinaryEncoder) Decode(data []byte) (*Message, error) {
+func (e BinaryEncoder) Decode(data []byte) (message *Message, err error) {
+	// A short or corrupt frame makes a codec read past the buffer and panic;
+	// turn that into an error so one bad client can't crash the read goroutine.
+	defer func() {
+		if r := recover(); r != nil {
+			message, err = nil, fmt.Errorf("%w: %v", ErrDecodeFailed, r)
+		}
+	}()
+
 	var buffer = bytes.NewBuffer(data)
 	id := e.idCodec.Decode(buffer).(uint8)
 	codec, ok := e.codecsById[id]
