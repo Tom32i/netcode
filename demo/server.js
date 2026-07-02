@@ -74,6 +74,5 @@ server.on('pong', ({ client, duration }) => console.info('Client %s ping: %sms',
 server.on('ready', () => console.info('Listening on port %s', port));
 
 function broadcastTotal() {
-    const { length } = server.clients;
-    server.clients.forEach(client => client.send('total', length));
+    server.clients.sendAll('total', server.clients.count());
 }

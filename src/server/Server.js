@@ -22,7 +22,7 @@ export default class Server extends EventEmitter {
         encoder = new JsonEncoder(),
         pingInterval = 30,
         maxPayload = Math.pow(2, 9),
-        clients = new MapClientDirectory(),
+        clients = null,
         autoStart = true
     ) {
         super();
@@ -43,7 +43,7 @@ export default class Server extends EventEmitter {
             server: this.server,
             maxPayload
         });
-        this.clients = clients;
+        this.clients = clients ?? new MapClientDirectory(encoder);
         this.pingInterval = pingInterval;
 
         this.server.on('request', this.onRequest);

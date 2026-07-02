@@ -4,7 +4,8 @@
  * Re-use ids after client disconnection.
  */
 export default class MapClientDirectory {
-    constructor(max = Math.pow(2, 16)) {
+    constructor(encoder, max = Math.pow(2, 16)) {
+        this.encoder = encoder;
         this.max = max;
         this.clients = new Map();
     }
@@ -52,6 +53,10 @@ export default class MapClientDirectory {
         this.clients.delete(client.id);
     }
 
+    count() {
+        return this.length;
+    }
+
     /**
      * Execute the given callback for every client
      *
@@ -79,5 +84,60 @@ export default class MapClientDirectory {
      */
     forFilter(filter, callback) {
         this.clients.forEach(client => filter(client) && callback(client));
+    }
+
+    /**
+     * Write buffer to all clients
+     *
+     * @param  {ArrayBuffer} data
+     */
+    writeAll(data) {
+        this.clients.forEach(client => client.write(data));
+    }
+
+    /**
+     * Write buffer to all other clients
+     *
+     * @param  {Client} target Client to exclude
+     * @param  {ArrayBuffer} data
+     */
+    writeOther(target, data) {
+        this.clients.forEach(client => {
+            if (client.id !== target.id) {
+                client.write(data);
+            }
+        });
+    }
+
+    /**
+     * Encode and send a message to a single client
+     *
+     * @param {Client} client
+     * @param {String} name
+     * @param {Object} data
+     */
+    send(client, name, data) {
+        client.send(name, data);
+    }
+
+    /**
+     * Encode and send a message to all clients
+     *
+     * @param {String} name
+     * @param {Object} data
+     */
+    sendAll(name, data) {
+        this.writeAll(this.encoder.encode(name, data));
+    }
+
+    /**
+     * Encode and send a message to all other clients
+     *
+     * @param {Client} target Client to exclude
+     * @param {String} name
+     * @param {Object} data
+     */
+    sendOther(target, name, data) {
+        this.writeOther(target, this.encoder.encode(name, data));
     }
 }

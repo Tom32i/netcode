@@ -41,7 +41,16 @@ export default class Client extends EventEmitter {
      * @param {Object} data
      */
     send(name, data) {
-        this.socket.send(this.encoder.encode(name, data));
+        this.write(this.encoder.encode(name, data));
+    }
+
+    /**
+     * Write buffer data
+     *
+     * @param {ArrayBuffer} data
+     */
+    write(data) {
+        this.socket.send(data);
     }
 
     /**
