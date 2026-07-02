@@ -8,5 +8,6 @@ func (err ServerError) Error() string {
 
 const (
 	ErrCodecNotFound = ServerError("codec not found")
+	ErrDecodeFailed  = ServerError("decode failed")
 	ErrInternal      = ServerError("internal error")
 )
