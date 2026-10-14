@@ -1,5 +1,6 @@
 import JsonEncoder from './JsonEncoder.js';
 import BinaryEncoder from './BinaryEncoder.js';
+import Cursor from './Cursor.js';
 import Codec from './codec/Codec.js';
 import BooleanCodec from './codec/BooleanCodec.js';
 import Float64Codec from './codec/Float64Codec.js';
@@ -18,6 +19,7 @@ import UIntLongCodec from './codec/UIntLongCodec.js';
 export {
     JsonEncoder,
     BinaryEncoder,
+    Cursor,
     Codec,
     BooleanCodec,
     Float64Codec,

@@ -44,7 +44,15 @@ func CreateBinaryEncoder(codecs []*RegisteredCodec, idCodec Codec) *BinaryEncode
 	}
 }
 
-func (e BinaryEncoder) Encode(message *Message) ([]byte, error) {
+func (e BinaryEncoder) Encode(message *Message) (data []byte, err error) {
+	// A codec panics on data it cannot encode (wrong type, string too long);
+	// turn that into an error so one bad message can't crash the caller.
+	defer func() {
+		if r := recover(); r != nil {
+			data, err = nil, fmt.Errorf("%w: %v", ErrEncodeFailed, r)
+		}
+	}()
+
 	var buffer bytes.Buffer
 
 	codec, ok := e.codecsByName[message.Name]

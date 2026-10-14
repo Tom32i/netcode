@@ -20,14 +20,14 @@ export default class FloatPrecisionCodec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        this.codec.encode(buffer, offset, data * this.factor);
+    encode(cursor, data) {
+        this.codec.encode(cursor, data * this.factor);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return this.codec.decode(buffer, offset) / this.factor;
+    decode(cursor) {
+        return this.codec.decode(cursor) / this.factor;
     }
 }

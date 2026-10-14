@@ -14,14 +14,14 @@ export default class BooleanCodec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setUint8(offset, data ? 1 : 0);
+    encode(cursor, data) {
+        cursor.writeUint8(data ? 1 : 0);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getUint8(offset) > 0;
+    decode(cursor) {
+        return cursor.readUint8() > 0;
     }
 }
