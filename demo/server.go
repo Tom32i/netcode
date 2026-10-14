@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	netcode "github.com/Tom32i/netcode/v3/go"
 	"log"
@@ -8,6 +9,33 @@ import (
 	"net/http"
 	"time"
 )
+
+type Position struct {
+	Id uint8
+	X  int16
+	Y  int16
+}
+
+// Custom composite codec: sub-codecs are called in order on the buffer.
+type PositionCodec struct {
+	idCodec    netcode.UInt8Codec
+	coordCodec netcode.Int16Codec
+}
+
+func (c PositionCodec) Encode(buffer *bytes.Buffer, data any) {
+	position := data.(*Position)
+	c.idCodec.Encode(buffer, position.Id)
+	c.coordCodec.Encode(buffer, position.X)
+	c.coordCodec.Encode(buffer, position.Y)
+}
+
+func (c PositionCodec) Decode(buffer *bytes.Buffer) any {
+	return &Position{
+		Id: c.idCodec.Decode(buffer).(uint8),
+		X:  c.coordCodec.Decode(buffer).(int16),
+		Y:  c.coordCodec.Decode(buffer).(int16),
+	}
+}
 
 type Demo struct {
 	sockets *netcode.Sockets
@@ -27,6 +55,7 @@ func main() {
 		{0, "greeting", netcode.StringLongCodec{}},
 		{0, "total", netcode.UInt8Codec{}},
 		{0, "int16", netcode.Int16Codec{}},
+		{0, "position", PositionCodec{}},
 	}, netcode.UInt8Codec{})
 
 	d := Demo{
@@ -68,6 +97,8 @@ func (d *Demo) run() {
 				d.handleGreeting(m.Socket, m.Message)
 			case "int16":
 				d.handleInt16(m.Socket, m.Message)
+			case "position":
+				d.handlePosition(m.Socket, m.Message)
 			default:
 				log.Printf("[socket #%d] '%s': %v", m.Socket.ID, m.Message.Name, m.Message.Data)
 			}
@@ -89,6 +120,7 @@ func (d *Demo) onClientJoin(s *netcode.Socket) {
 	d.broadcastTotal()
 
 	s.Send(&netcode.Message{"int16", int16(math.MaxInt16)})
+	s.Send(&netcode.Message{"position", &Position{uint8(s.ID), -1234, 5678}})
 }
 
 func (d *Demo) onClientLeave(s *netcode.Socket) {
@@ -111,4 +143,9 @@ func (d *Demo) handleGreeting(s *netcode.Socket, m *netcode.Message) {
 
 func (d *Demo) handleInt16(s *netcode.Socket, m *netcode.Message) {
 	log.Printf("Client #%d sends int16: %d.", s.ID, m.Data.(int16))
+}
+
+func (d *Demo) handlePosition(s *netcode.Socket, m *netcode.Message) {
+	position := m.Data.(*Position)
+	log.Printf("Client #%d sends position of %d: %d, %d.", s.ID, position.Id, position.X, position.Y)
 }

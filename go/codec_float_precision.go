@@ -15,7 +15,8 @@ type FloatPrecisionCodec[F float32 | float64, T int8 | int16 | int32 | int64 | u
 }
 
 func (c *FloatPrecisionCodec[F, T]) Encode(buffer *bytes.Buffer, data any) {
-	c.codec.Encode(buffer, T(c.factor*data.(F)))
+	// Round instead of truncating (0.29 * 100 = 28.999999999999996).
+	c.codec.Encode(buffer, T(math.Round(float64(c.factor*data.(F)))))
 }
 
 func (c *FloatPrecisionCodec[F, T]) Decode(buffer *bytes.Buffer) any {

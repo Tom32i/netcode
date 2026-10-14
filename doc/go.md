@@ -106,8 +106,8 @@ This call blocks; run it on the main goroutine.
 | Function | Description |
 | --- | --- |
 | `CreateBinaryEncoder(codecs, idCodec)` | Build an encoder from an ordered list of `RegisteredCodec` and the codec used for the event id. |
-| `Encode(message *Message) ([]byte, error)` | Encode a message to bytes. Returns `ErrCodecNotFound` if the event name is unknown. |
-| `Decode(data []byte) (*Message, error)` | Decode bytes to a message. Returns `ErrCodecNotFound` if the id is unknown. |
+| `Encode(message *Message) ([]byte, error)` | Encode a message to bytes. Returns `ErrCodecNotFound` if the event name is unknown, `ErrEncodeFailed` if a codec cannot encode the data. |
+| `Decode(data []byte) (*Message, error)` | Decode bytes to a message. Returns `ErrCodecNotFound` if the id is unknown, `ErrDecodeFailed` if the frame is truncated or malformed. |
 
 A `Message` is a `{ Name string; Data any }` pair. The concrete type held in `Data` depends on the codec — see the table below.
 
@@ -170,9 +170,9 @@ The following packaged codecs are available. They are wire-compatible with their
 | `Int64Codec` | `int64` | 8 |
 | `Float32Codec` | `float32` | 4 |
 | `Float64Codec` | `float64` | 8 |
-| `CreateFloatPrecisionCodec[F, I](intCodec, precision)` | `float32`/`float64` encoded as an int | size of `intCodec` |
-| `StringCodec` | `string` (up to 255 bytes) | 1 + N |
-| `StringLongCodec` | `string` (up to 65535 bytes) | 2 + N |
+| `CreateFloatPrecisionCodec[F, I](intCodec, precision)` | `float32`/`float64` scaled and rounded to an int (halves away from zero) | size of `intCodec` |
+| `StringCodec` | `string` (up to 255 bytes, longer returns `ErrEncodeFailed`) | 1 + N |
+| `StringLongCodec` | `string` (up to 65535 bytes, longer returns `ErrEncodeFailed`) | 2 + N |
 
 > When reading from a `Message.Data`, type-assert with the codec's Go type — for example `m.Data.(uint8)` or `m.Data.(string)`.
 
@@ -194,6 +194,8 @@ You can build composite codecs by delegating to the packaged ones — see how `F
 | Sentinel | Meaning |
 | --- | --- |
 | `ErrCodecNotFound` | The event name (when encoding) or id (when decoding) is not registered on this encoder. |
+| `ErrEncodeFailed` | A codec could not encode the data: wrong Go type, or a string longer than its codec's limit. |
+| `ErrDecodeFailed` | The frame is truncated or malformed. |
 | `ErrInternal` | Unspecified internal error. |
 
 Wrap with `errors.Is` to check.

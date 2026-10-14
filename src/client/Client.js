@@ -71,9 +71,16 @@ export default class Client extends EventEmitter {
      * @param {Event} event
      */
     onMessage(event) {
-        const { name, data } = this.encoder.decode(event.data);
+        let message;
 
-        this.emit(name, data);
+        try {
+            message = this.encoder.decode(event.data);
+        } catch (error) {
+            console.error('[ERROR] Could not parse message:', error, '\n\r\tEvent: ', event);
+            return;
+        }
+
+        this.emit(message.name, message.data);
     }
 
     /**

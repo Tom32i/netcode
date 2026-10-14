@@ -14,14 +14,14 @@ export default class UInt16Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setUint16(offset, data);
+    encode(cursor, data) {
+        cursor.writeUint16(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getUint16(offset);
+    decode(cursor) {
+        return cursor.readUint16();
     }
 }

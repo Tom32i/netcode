@@ -4,6 +4,7 @@ import Client from './Client.js';
 import MapClientDirectory from './MapClientDirectory.js';
 import JsonEncoder from '../encoder/JsonEncoder.js';
 import BinaryEncoder from '../encoder/BinaryEncoder.js';
+import Cursor from '../encoder/Cursor.js';
 import Codec from '../encoder/codec/Codec.js';
 import BooleanCodec from '../encoder/codec/BooleanCodec.js';
 import Float32Codec from '../encoder/codec/Float32Codec.js';
@@ -27,6 +28,7 @@ export {
     MapClientDirectory,
     JsonEncoder,
     BinaryEncoder,
+    Cursor,
     Codec,
     BooleanCodec,
     Float32Codec,

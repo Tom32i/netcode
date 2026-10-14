@@ -16,23 +16,21 @@ export default class Codec {
     }
 
     /**
-     * Encode
+     * Encode the data at the cursor position, advancing the cursor
      *
-     * @param {ArrayBuffer} data
-     * @param {Number} Offset
-     * @param {Object} data
+     * @param {Cursor} cursor
+     * @param {Object|Number|Boolean|String|null} data
      */
-    encode(buffer, offset, data) {}
+    encode(cursor, data) {}
 
     /**
-     * Decode
+     * Decode the data at the cursor position, advancing the cursor
      *
-     * @param {Buffer} buffer
-     * @param {Number} offset
+     * @param {Cursor} cursor
      *
      * @return {Object|Number|Boolean|String|null}
      */
-    decode(buffer, offset) {
+    decode(cursor) {
         return null;
     }
 }
