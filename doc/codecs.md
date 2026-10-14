@@ -21,7 +21,7 @@ Packaged codecs are available in the `netcode/server` and `netcode/client` packa
 | `Int32Codec`                                | Integer from -2147483648 to 2147483647       | `['position', new Int32Codec()]`<br />`send('position', -123456)`                                | 4                       |
 | `Float32Codec`<br />⚠ Subject to precision issues | Float on 32 bits                       | `['position', new Float32Codec()]`<br />`send('position', 84.19999694824219)`                    | 4                       |
 | `Float64Codec`                              | Float on 64 bits                             | `['position', new Float64Codec()]`<br />`send('position', -12456789.123456789087654321012345678901)` | 8                       |
-| `FloatPrecisionCodec(IntCodec, precision)`  | Float scaled to a fixed-precision integer    | `['position', new FloatPrecisionCodec(Int8Codec, 3)]`<br />`send('position', -0.128)`      | size of `IntCodec`      |
+| `FloatPrecisionCodec(IntCodec, precision)`  | Float scaled to a fixed-precision integer, rounded to the nearest (halves away from zero) | `['position', new FloatPrecisionCodec(Int8Codec, 3)]`<br />`send('position', -0.128)`      | size of `IntCodec`      |
 | `StringCodec`                               | UTF-8 string up to 255 bytes (longer throws a `RangeError`) | `['player:name', new StringCodec()]`<br />`send('player:name', 'DarkShadow73')`                  | 1 + UTF-8 byte length   |
 | `StringLongCodec`                           | UTF-8 string up to 65535 bytes (longer throws a `RangeError`) | `['url', new StringLongCodec()]`<br />`send('url', 'https://my.long.url/hash/xxx...')`           | 2 + UTF-8 byte length   |
 

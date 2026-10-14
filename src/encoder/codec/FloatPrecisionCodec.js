@@ -21,7 +21,11 @@ export default class FloatPrecisionCodec extends Codec {
      * {@inheritdoc}
      */
     encode(cursor, data) {
-        this.codec.encode(cursor, data * this.factor);
+        const value = data * this.factor;
+
+        // Round instead of letting the int codec truncate (0.29 * 100 = 28.999999999999996).
+        // Halves round away from zero, like Go's math.Round.
+        this.codec.encode(cursor, value < 0 ? -Math.round(-value) : Math.round(value));
     }
 
     /**
