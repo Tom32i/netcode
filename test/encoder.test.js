@@ -443,3 +443,16 @@ describe('String length limits', () => {
     expect(() => encoder.encode('position', { id: 1, x: 2, y: 3, name })).toThrow(RangeError);
   });
 });
+
+describe('FloatPrecisionCodec rounding', () => {
+  // 0.29 * 100 is 28.999999999999996 in floating point, which truncates to 28.
+  // Halves round away from zero, like the Go codec.
+  const codec = new FloatPrecisionCodec(Int8Codec, 2);
+
+  test.each([
+    [0.29, 0.29], [0.57, 0.57], [-0.29, -0.29], [-0.57, -0.57],
+    [0.125, 0.13], [-0.125, -0.13], [1.27, 1.27], [-1.28, -1.28],
+  ])('Should encode/decode %s as %s', (value, expected) => {
+    expect(roundTrip(codec, value)).toBe(expected);
+  });
+});
