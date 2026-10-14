@@ -14,14 +14,14 @@ export default class Int8Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setInt8(offset, data);
+    encode(cursor, data) {
+        cursor.writeInt8(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getInt8(offset);
+    decode(cursor) {
+        return cursor.readInt8();
     }
 }

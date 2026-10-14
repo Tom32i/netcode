@@ -14,14 +14,14 @@ export default class UInt8Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setUint8(offset, data);
+    encode(cursor, data) {
+        cursor.writeUint8(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getUint8(offset);
+    decode(cursor) {
+        return cursor.readUint8();
     }
 }

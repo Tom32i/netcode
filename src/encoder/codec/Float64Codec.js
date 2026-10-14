@@ -14,14 +14,14 @@ export default class Float64Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setFloat64(offset, data);
+    encode(cursor, data) {
+        cursor.writeFloat64(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getFloat64(offset);
+    decode(cursor) {
+        return cursor.readFloat64();
     }
 }

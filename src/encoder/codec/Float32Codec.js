@@ -14,14 +14,14 @@ export default class Float32Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setFloat32(offset, data);
+    encode(cursor, data) {
+        cursor.writeFloat32(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getFloat32(offset);
+    decode(cursor) {
+        return cursor.readFloat32();
     }
 }

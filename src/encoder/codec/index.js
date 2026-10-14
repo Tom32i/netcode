@@ -1,3 +1,4 @@
+import Cursor from '../Cursor.js';
 import Codec from './Codec.js';
 import BooleanCodec from './BooleanCodec.js';
 import Float32Codec from './Float32Codec.js';
@@ -15,6 +16,7 @@ import UInt8Codec from './UInt8Codec.js';
 import UIntLongCodec from './UIntLongCodec.js';
 
 export {
+    Cursor,
     Codec,
     BooleanCodec,
     Float32Codec,
