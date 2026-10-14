@@ -170,7 +170,7 @@ The following packaged codecs are available. They are wire-compatible with their
 | `Int64Codec` | `int64` | 8 |
 | `Float32Codec` | `float32` | 4 |
 | `Float64Codec` | `float64` | 8 |
-| `CreateFloatPrecisionCodec[F, I](intCodec, precision)` | `float32`/`float64` encoded as an int | size of `intCodec` |
+| `CreateFloatPrecisionCodec[F, I](intCodec, precision)` | `float32`/`float64` scaled and rounded to an int (halves away from zero) | size of `intCodec` |
 | `StringCodec` | `string` (up to 255 bytes, longer returns `ErrEncodeFailed`) | 1 + N |
 | `StringLongCodec` | `string` (up to 65535 bytes, longer returns `ErrEncodeFailed`) | 2 + N |
 

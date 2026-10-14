@@ -453,3 +453,21 @@ func TestUIntLongCodec(t *testing.T) {
 		t.Fatalf(`Encode/Decode(%v) got %v, want %v`, want, got, want)
 	}
 }
+
+// FloatPrecisionCodec must round to the nearest integer, not truncate:
+// 0.29 * 100 is 28.999999999999996 in floating point, which truncates to 28.
+// Halves round away from zero, like the JS codec.
+func TestFloatPrecisionCodecRounding(t *testing.T) {
+	var buffer bytes.Buffer
+	codec := CreateFloatPrecisionCodec[float64, int8](Int8Codec{}, 2)
+
+	for _, c := range []struct{ in, want float64 }{
+		{0.29, 0.29}, {0.57, 0.57}, {-0.29, -0.29}, {-0.57, -0.57},
+		{0.125, 0.13}, {-0.125, -0.13}, {1.27, 1.27}, {-1.28, -1.28},
+	} {
+		codec.Encode(&buffer, c.in)
+		if got := codec.Decode(&buffer).(float64); got != c.want {
+			t.Fatalf(`Encode/Decode(%v) got %v, want %v`, c.in, got, c.want)
+		}
+	}
+}
