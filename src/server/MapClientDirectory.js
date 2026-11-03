@@ -8,6 +8,8 @@ export default class MapClientDirectory {
         this.encoder = encoder;
         this.max = max;
         this.clients = new Map();
+        // The id this directory gave each client: another directory holding the client may overwrite client.id.
+        this.ids = new Map();
     }
 
     /**
@@ -42,15 +44,17 @@ export default class MapClientDirectory {
     add(client) {
         client.id = this.generateId();
         this.clients.set(client.id, client);
+        this.ids.set(client, client.id);
     }
 
     /**
-     * Adds a new client
+     * Removes a client, by the id this directory gave it
      *
      * @param {Client} client
      */
     remove(client) {
-        this.clients.delete(client.id);
+        this.clients.delete(this.ids.get(client));
+        this.ids.delete(client);
     }
 
     count() {
@@ -73,7 +77,7 @@ export default class MapClientDirectory {
      * @param {Function} callback
      */
     forOther(target, callback) {
-        this.clients.forEach(client => (client.id !== target.id) && callback(client));
+        this.clients.forEach(client => (client !== target) && callback(client));
     }
 
     /**
@@ -103,7 +107,7 @@ export default class MapClientDirectory {
      */
     writeOther(target, data) {
         this.clients.forEach(client => {
-            if (client.id !== target.id) {
+            if (client !== target) {
                 client.write(data);
             }
         });

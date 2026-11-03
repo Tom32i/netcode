@@ -115,6 +115,28 @@ describe('MapClientDirectory', () => {
         expect(c.written).toEqual(['[hi:7]']);
     });
 
+    test('removes a client by its own id after another directory gave it a new one', () => {
+        const room = new MapClientDirectory(encoder);
+        room.add(createClient());
+        room.add(c);
+
+        directory.remove(c);
+
+        expect(Array.from(directory.clients.values())).toEqual([a, b]);
+    });
+
+    test('forOther and writeOther skip the target after another directory gave it a new id', () => {
+        const room = new MapClientDirectory(encoder);
+        room.add(c);
+        const visited = [];
+
+        directory.forOther(c, client => visited.push(client));
+        directory.writeOther(c, 'raw');
+
+        expect(visited).toEqual([a, b]);
+        expect(c.written).toEqual([]);
+    });
+
     test('generateId throws when the directory is full', () => {
         const full = new MapClientDirectory(encoder, 1);
         full.add(createClient());
