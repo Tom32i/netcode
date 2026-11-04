@@ -27,7 +27,7 @@ export default class StringCodec extends Codec {
      * @type {Number}
      */
     getByteLength(data) {
-        return this.prefixByteLength + this.checkLength(utf8ByteLength(String(data || '')));
+        return this.prefixByteLength + this.checkLength(utf8ByteLength(data || ''));
     }
 
     /**
@@ -37,7 +37,7 @@ export default class StringCodec extends Codec {
         // Reserve the length prefix, then fill it with the byte count actually written
         const lengthOffset = cursor.reserve(this.prefixByteLength);
 
-        this.writeLength(cursor, lengthOffset, this.checkLength(cursor.writeUtf8(String(data || ''))));
+        this.writeLength(cursor, lengthOffset, this.checkLength(cursor.writeUtf8(data || '')));
     }
 
     /**
