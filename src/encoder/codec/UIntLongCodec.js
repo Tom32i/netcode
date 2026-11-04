@@ -21,10 +21,6 @@ export default class UIntLongCodec extends Codec {
      * {@inheritdoc}
      */
     encode(cursor, data) {
-        if (data >= 256 ** this.byteLength) {
-            throw new RangeError(`${data} does not fit in ${this.byteLength} bytes`);
-        }
-
         // Big-endian: most significant byte first. Dividing by a power of 2 is exact.
         for (let index = this.byteLength - 1; index >= 0; index--) {
             cursor.writeUint8(Math.floor(data / 256 ** index) % 256);

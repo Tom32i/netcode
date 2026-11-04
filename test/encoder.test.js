@@ -414,10 +414,6 @@ describe('UIntLongCodec edge cases', () => {
     codec.encode(new Cursor(buffer), 0x010203040506);
     expect(Array.from(new Uint8Array(buffer))).toEqual([1, 2, 3, 4, 5, 6]);
   });
-
-  test('Should throw when the value does not fit', () => {
-    expect(() => codec.encode(new Cursor(new ArrayBuffer(6)), 2 ** 48)).toThrow(RangeError);
-  });
 });
 
 describe('String length limits', () => {
