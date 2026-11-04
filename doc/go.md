@@ -16,7 +16,7 @@ It is fully compatible with the JavaScript Netcode browser client: a Go server a
 ## Installation
 
 ```sh
-go get github.com/Tom32i/netcode/v3/go
+go get github.com/Tom32i/netcode/v4/go
 ```
 
 Requires Go `>= 1.23`.
@@ -55,7 +55,7 @@ import (
     "math"
     "net/http"
 
-    netcode "github.com/Tom32i/netcode/v3/go"
+    netcode "github.com/Tom32i/netcode/v4/go"
 )
 
 func main() {

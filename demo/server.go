@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"flag"
-	netcode "github.com/Tom32i/netcode/v3/go"
+	netcode "github.com/Tom32i/netcode/v4/go"
 	"log"
 	"math"
 	"net/http"

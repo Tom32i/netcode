@@ -1,4 +1,4 @@
-module github.com/Tom32i/netcode/v3
+module github.com/Tom32i/netcode/v4
 
 go 1.23
 
