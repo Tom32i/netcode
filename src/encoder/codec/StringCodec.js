@@ -18,7 +18,7 @@ function checkLength(length) {
 }
 
 /**
- *  String codec (limited to 255 chars)
+ *  String codec (up to 255 bytes once UTF-8 encoded)
  */
 export default class StringCodec extends Codec {
     /**
