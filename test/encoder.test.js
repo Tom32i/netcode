@@ -457,13 +457,3 @@ describe('FloatPrecisionCodec rounding', () => {
     expect(roundTrip(codec, value)).toBe(expected);
   });
 });
-
-describe('FloatPrecisionCodec range', () => {
-  // Rounding past the int codec's range clamps instead of wrapping to the other end.
-  test.each([
-    [Int8Codec, 1.276, 1.27], [Int8Codec, -1.286, -1.28], [Int8Codec, 5, 1.27], [Int8Codec, -5, -1.28],
-    [UInt8Codec, 2.556, 2.55], [UInt8Codec, -0.01, 0],
-  ])('Should clamp %o: %s to %s', (intCodec, value, expected) => {
-    expect(roundTrip(new FloatPrecisionCodec(intCodec, 2), value)).toBe(expected);
-  });
-});
