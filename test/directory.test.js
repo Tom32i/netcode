@@ -1,5 +1,8 @@
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import MapClientDirectory from '../src/server/MapClientDirectory.js';
+import Client from '../src/server/Client.js';
+import BinaryEncoder from '../src/encoder/BinaryEncoder.js';
+import StringCodec from '../src/encoder/codec/StringCodec.js';
 
 /**
  * Minimal encoder stub: encodes to a recognisable string buffer.
@@ -142,5 +145,41 @@ describe('MapClientDirectory', () => {
         full.add(createClient());
 
         expect(() => full.add(createClient())).toThrow(/Max clients reached/);
+    });
+});
+
+describe('Sending a message the codec refuses', () => {
+    // StringCodec refuses strings over 255 bytes: the message is skipped and logged, not thrown.
+    const binaryEncoder = new BinaryEncoder([['name', new StringCodec()]]);
+    const tooLong = 'a'.repeat(256);
+
+    test('MapClientDirectory sendAll and sendOther skip it', () => {
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const directory = new MapClientDirectory(binaryEncoder);
+        const a = createClient();
+        const b = createClient();
+        directory.add(a);
+        directory.add(b);
+
+        expect(() => directory.sendAll('name', tooLong)).not.toThrow();
+        expect(() => directory.sendOther(a, 'name', tooLong)).not.toThrow();
+
+        expect(a.written).toEqual([]);
+        expect(b.written).toEqual([]);
+        expect(error).toHaveBeenCalledTimes(2);
+        error.mockRestore();
+    });
+
+    test('Client send skips it', () => {
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const socket = { readyState: 1, sent: [], addEventListener() {}, send(data) { this.sent.push(data); } };
+        const client = new Client(socket, '127.0.0.1', binaryEncoder);
+
+        expect(() => client.send('name', tooLong)).not.toThrow();
+        client.send('name', 'Bob');
+
+        expect(socket.sent).toHaveLength(1);
+        expect(error).toHaveBeenCalledTimes(1);
+        error.mockRestore();
     });
 });
