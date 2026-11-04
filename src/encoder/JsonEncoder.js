@@ -22,10 +22,6 @@ export default class JsonEncoder {
      * @return {String}
      */
     encode(name, data) {
-        if (this.constructor.reservedEvents.includes(name)) {
-            throw new Error(`"${name}" is a reserved event name.`);
-        }
-
         return JSON.stringify({ name, data });
     }
 

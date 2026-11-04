@@ -4,9 +4,6 @@ import Codec from './Codec.js';
  *  16 bit signed Int codec (-32768 to 32767)
  */
 export default class Int16Codec extends Codec {
-    static minimum = -32768;
-    static maximum = 32767;
-
     /**
      * @type {Number}
      */

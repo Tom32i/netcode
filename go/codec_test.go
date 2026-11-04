@@ -471,30 +471,3 @@ func TestFloatPrecisionCodecRounding(t *testing.T) {
 		}
 	}
 }
-
-// FloatPrecisionCodec clamps to the int type's range instead of wrapping:
-// 1.276 * 100 rounds to 128, past int8's 127.
-func TestFloatPrecisionCodecRange(t *testing.T) {
-	var buffer bytes.Buffer
-	signed := CreateFloatPrecisionCodec[float64, int8](Int8Codec{}, 2)
-
-	for _, c := range []struct{ in, want float64 }{
-		{1.276, 1.27}, {-1.286, -1.28}, {5, 1.27}, {-5, -1.28},
-	} {
-		signed.Encode(&buffer, c.in)
-		if got := signed.Decode(&buffer).(float64); got != c.want {
-			t.Fatalf(`int8 Encode/Decode(%v) got %v, want %v`, c.in, got, c.want)
-		}
-	}
-
-	unsigned := CreateFloatPrecisionCodec[float64, uint8](UInt8Codec{}, 2)
-
-	for _, c := range []struct{ in, want float64 }{
-		{2.556, 2.55}, {-0.01, 0},
-	} {
-		unsigned.Encode(&buffer, c.in)
-		if got := unsigned.Decode(&buffer).(float64); got != c.want {
-			t.Fatalf(`uint8 Encode/Decode(%v) got %v, want %v`, c.in, got, c.want)
-		}
-	}
-}

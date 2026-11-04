@@ -3,6 +3,7 @@ package netcode
 import (
 	"context"
 	"github.com/coder/websocket"
+	"log"
 	"time"
 )
 
@@ -35,6 +36,8 @@ func (s *Socket) Send(message *Message) {
 
 	if err == nil {
 		s.Write(data)
+	} else {
+		log.Printf("Error: %v", err)
 	}
 }
 

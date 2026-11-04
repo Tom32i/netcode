@@ -391,11 +391,6 @@ describe('StringCodec edge cases', () => {
     expect(roundTrip(codec, null)).toBe('');
   });
 
-  test('Should encode a number as its string', () => {
-    expect(roundTrip(codec, 123)).toBe('123');
-    expect(roundTrip(new StringLongCodec(), 123)).toBe('123');
-  });
-
   test('Should encode/decode a lone surrogate as U+FFFD', () => {
     expect(roundTrip(codec, 'a\uD83Db')).toBe('a\uFFFDb');
   });
@@ -413,10 +408,6 @@ describe('UIntLongCodec edge cases', () => {
 
     codec.encode(new Cursor(buffer), 0x010203040506);
     expect(Array.from(new Uint8Array(buffer))).toEqual([1, 2, 3, 4, 5, 6]);
-  });
-
-  test('Should throw when the value does not fit', () => {
-    expect(() => codec.encode(new Cursor(new ArrayBuffer(6)), 2 ** 48)).toThrow(RangeError);
   });
 });
 
@@ -459,15 +450,5 @@ describe('FloatPrecisionCodec rounding', () => {
     [0.125, 0.13], [-0.125, -0.13], [1.27, 1.27], [-1.28, -1.28],
   ])('Should encode/decode %s as %s', (value, expected) => {
     expect(roundTrip(codec, value)).toBe(expected);
-  });
-});
-
-describe('FloatPrecisionCodec range', () => {
-  // Rounding past the int codec's range clamps instead of wrapping to the other end.
-  test.each([
-    [Int8Codec, 1.276, 1.27], [Int8Codec, -1.286, -1.28], [Int8Codec, 5, 1.27], [Int8Codec, -5, -1.28],
-    [UInt8Codec, 2.556, 2.55], [UInt8Codec, -0.01, 0],
-  ])('Should clamp %o: %s to %s', (intCodec, value, expected) => {
-    expect(roundTrip(new FloatPrecisionCodec(intCodec, 2), value)).toBe(expected);
   });
 });

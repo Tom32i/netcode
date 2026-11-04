@@ -4,9 +4,6 @@ import Codec from './Codec.js';
  *  32 bit unsigned Int codec (0 to 4294967295)
  */
 export default class UInt32Codec extends Codec {
-    static minimum = 0;
-    static maximum = 4294967295;
-
     /**
      * @type {Number}
      */

@@ -1,47 +1,34 @@
-import Codec from './Codec.js';
-import { utf8ByteLength } from '../utf8.js';
+import StringCodec from './StringCodec.js';
 
 /**
- * A longer string would wrap the length prefix: the receiver would then read
- * the rest of the string as the following fields.
- *
- * @param {Number} length
- *
- * @return {Number}
+ *  Long String codec (up to 65535 bytes once UTF-8 encoded)
  */
-function checkLength(length) {
-    if (length > 65535) {
-        throw new RangeError(`String is ${length} bytes, StringLongCodec max is 65535`);
-    }
-
-    return length;
-}
-
-/**
- *  Long String codec (limited to 65536 chars)
- */
-export default class StringLongCodec extends Codec {
+export default class StringLongCodec extends StringCodec {
     /**
-     * @type {Number}
+     * {@inheritdoc}
      */
-    getByteLength(data) {
-        return 2 + checkLength(utf8ByteLength(String(data || '')));
+    get prefixByteLength() {
+        return 2;
     }
 
     /**
      * {@inheritdoc}
      */
-    encode(cursor, data) {
-        // Reserve the length prefix, then fill it with the byte count actually written
-        const lengthOffset = cursor.reserve(2);
-
-        cursor.view.setUint16(lengthOffset, checkLength(cursor.writeUtf8(String(data || ''))));
+    get maxByteLength() {
+        return 65535;
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(cursor) {
-        return cursor.readUtf8(cursor.readUint16());
+    writeLength(cursor, offset, length) {
+        cursor.view.setUint16(offset, length);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    readLength(cursor) {
+        return cursor.readUint16();
     }
 }

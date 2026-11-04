@@ -78,4 +78,4 @@ Remove the listener for this event/callback.
 | `close` | `client` _Client_                                                                | Client connection is closed.                                                                    |
 | `*`     | `eventData` _Number \| String \| Boolean \| Object_, `client` _Client_           | Every event sent through the websocket pipe will emit an event on the other end of the socket. |
 
-_Note: `open`, `error` and `close` are reserved event names; the Encoder will throw an exception if you define a custom event with either of these names._
+_Note: `open`, `error` and `close` are reserved event names: don't use them for custom events. The `BinaryEncoder` throws an exception if you define one; the `JsonEncoder` doesn't check._
