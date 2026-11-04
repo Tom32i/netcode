@@ -4,6 +4,9 @@ import Codec from './Codec.js';
  *  8 bit signed Int codec (-128 to 127)
  */
 export default class Int8Codec extends Codec {
+    static minimum = -128;
+    static maximum = 127;
+
     /**
      * @type {Number}
      */

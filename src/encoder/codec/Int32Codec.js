@@ -4,6 +4,9 @@ import Codec from './Codec.js';
  *  32 bit signed Int codec (-2147483648 to 2147483647)
  */
 export default class Int32Codec extends Codec {
+    static minimum = -2147483648;
+    static maximum = 2147483647;
+
     /**
      * @type {Number}
      */

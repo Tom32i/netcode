@@ -11,6 +11,8 @@ export default class FloatPrecisionCodec extends Codec {
 
         this.codec = new codec();
         this.factor = 10**precision;
+        this.minimum = codec.minimum ?? -Infinity;
+        this.maximum = codec.maximum ?? Infinity;
     }
 
     getByteLength(data) {
@@ -25,7 +27,10 @@ export default class FloatPrecisionCodec extends Codec {
 
         // Round instead of letting the int codec truncate (0.29 * 100 = 28.999999999999996).
         // Halves round away from zero, like Go's math.Round.
-        this.codec.encode(cursor, value < 0 ? -Math.round(-value) : Math.round(value));
+        const rounded = value < 0 ? -Math.round(-value) : Math.round(value);
+
+        // Clamp to the int codec's range: 127.6 rounds to 128, which an Int8 would wrap to -128.
+        this.codec.encode(cursor, Math.min(Math.max(rounded, this.minimum), this.maximum));
     }
 
     /**
