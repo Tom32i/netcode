@@ -20,29 +20,27 @@ export default class UIntLongCodec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        const view = new DataView(buffer, offset, this.byteLength);
-        const bin = this.bytePad(data.toString(2), this.byteLength).match(/.{8}/g);
-        bin.forEach((value, index) => view.setUint8(index, parseInt(value, 2)));
+    encode(cursor, data) {
+        if (data >= 256 ** this.byteLength) {
+            throw new RangeError(`${data} does not fit in ${this.byteLength} bytes`);
+        }
+
+        // Big-endian: most significant byte first. Dividing by a power of 2 is exact.
+        for (let index = this.byteLength - 1; index >= 0; index--) {
+            cursor.writeUint8(Math.floor(data / 256 ** index) % 256);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        const view = new Uint8Array(buffer, offset, this.byteLength);
-        return parseInt(Array.from(view).map(value => this.bytePad(value.toString(2), 1)).join(''), 2);
-    }
+    decode(cursor) {
+        let value = 0;
 
-    /**
-     * Fill the binaryString with zeros to make whole bytes.
-     *
-     * @param {String} binaryString
-     * @param {Number} byteLength
-     *
-     * @return {String}
-     */
-    bytePad(binaryString, byteLength) {
-        return '0'.repeat((8 * byteLength) - binaryString.length) + binaryString;
+        for (let index = 0; index < this.byteLength; index++) {
+            value = value * 256 + cursor.readUint8();
+        }
+
+        return value;
     }
 }

@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import encodeMessage from './encodeMessage.js';
 
 export default class Client extends EventEmitter {
     /**
@@ -41,7 +42,11 @@ export default class Client extends EventEmitter {
      * @param {Object} data
      */
     send(name, data) {
-        this.write(this.encoder.encode(name, data));
+        const buffer = encodeMessage(this.encoder, name, data);
+
+        if (buffer !== null) {
+            this.write(buffer);
+        }
     }
 
     /**

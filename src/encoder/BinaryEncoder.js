@@ -1,3 +1,4 @@
+import Cursor from './Cursor.js';
 import UInt8Codec from './codec/UInt8Codec.js';
 
 export default class BinaryEncoder {
@@ -49,11 +50,11 @@ export default class BinaryEncoder {
             throw new Error(`No handler found for event "${name}"`);
         }
 
-        const idByteLength = this.idCodec.getByteLength();
-        const buffer = new ArrayBuffer(idByteLength + handler.getByteLength(data));
+        const buffer = new ArrayBuffer(this.idCodec.getByteLength() + handler.getByteLength(data));
+        const cursor = new Cursor(buffer);
 
-        this.idCodec.encode(buffer, 0, handler.id);
-        handler.encode(buffer, idByteLength, data);
+        this.idCodec.encode(cursor, handler.id);
+        handler.encode(cursor, data);
 
         return buffer;
     }
@@ -70,7 +71,8 @@ export default class BinaryEncoder {
             throw new Error('Empty buffer');
         }
 
-        const id = this.idCodec.decode(buffer, 0);
+        const cursor = new Cursor(buffer);
+        const id = this.idCodec.decode(cursor);
         const handler = this.handlersById[id];
 
         if (!handler) {
@@ -79,7 +81,7 @@ export default class BinaryEncoder {
 
         return {
             name: handler.name,
-            data: handler.decode(buffer, this.idCodec.getByteLength()),
+            data: handler.decode(cursor),
         };
     }
 

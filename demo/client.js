@@ -1,4 +1,5 @@
 import { Client, BinaryEncoder, UInt8Codec, UIntLongCodec, Int16Codec, BooleanCodec, StringLongCodec } from 'netcode/client';
+import PositionCodec from './PositionCodec.js';
 
 window.addEventListener('load', () => {
     const target = document.getElementById('output');
@@ -20,6 +21,7 @@ window.addEventListener('load', () => {
         ['greeting', new StringLongCodec()],
         ['total', new UInt8Codec()],
         ['int16', new Int16Codec()],
+        ['position', new PositionCodec()],
     ]);
 
 
@@ -56,6 +58,13 @@ window.addEventListener('load', () => {
     client.on('int16', ({ detail: value }) => {
         console.info(`int16 codec: ${value}.`);
         client.send('int16', -32768);
+    });
+
+    // Listen for a "position" event (custom composite codec)
+    client.on('position', ({ detail: { id, x, y } }) => {
+        console.info('Position of %s received: %s, %s', id, x, y);
+        // Answer with the mirrored position
+        client.send('position', { id, x: -x, y: -y });
     });
 
     // Listen for an "inverse" event

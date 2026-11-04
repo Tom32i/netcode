@@ -7,6 +7,7 @@ import {
     BooleanCodec,
     StringLongCodec,
 } from 'netcode/server';
+import PositionCodec from './PositionCodec.js';
 
 // Register your events
 const encoder = new BinaryEncoder([
@@ -17,6 +18,7 @@ const encoder = new BinaryEncoder([
     ['greeting', new StringLongCodec()],
     ['total', new UInt8Codec()],
     ['int16', new Int16Codec()],
+    ['position', new PositionCodec()],
 ]);
 
 // Create the server
@@ -54,12 +56,18 @@ server.on('client:join', client => {
         console.info('Client %s sends int16: %s', client.id, message);
     });
 
+    // Listen for "position" event (custom composite codec)
+    client.on('position', ({ id, x, y }) => {
+        console.info('Client %s sends position of %s: %s, %s', client.id, id, x, y);
+    });
+
     // Send event "id" to the client
     client.send('id', client.id);
 
     broadcastTotal();
 
     client.send('int16', 32767);
+    client.send('position', { id: client.id, x: -1234, y: 5678 });
 });
 
 // Listen for disconnecting clients

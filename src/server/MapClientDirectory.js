@@ -1,3 +1,5 @@
+import encodeMessage from './encodeMessage.js';
+
 /**
  * List clients and handle id generation.
  * Map based implementation.
@@ -131,7 +133,11 @@ export default class MapClientDirectory {
      * @param {Object} data
      */
     sendAll(name, data) {
-        this.writeAll(this.encoder.encode(name, data));
+        const buffer = encodeMessage(this.encoder, name, data);
+
+        if (buffer !== null) {
+            this.writeAll(buffer);
+        }
     }
 
     /**
@@ -142,6 +148,10 @@ export default class MapClientDirectory {
      * @param {Object} data
      */
     sendOther(target, name, data) {
-        this.writeOther(target, this.encoder.encode(name, data));
+        const buffer = encodeMessage(this.encoder, name, data);
+
+        if (buffer !== null) {
+            this.writeOther(target, buffer);
+        }
     }
 }

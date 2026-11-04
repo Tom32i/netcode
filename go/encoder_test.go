@@ -2,6 +2,7 @@ package netcode
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -52,5 +53,33 @@ func TestBinaryEncoderDecodeTruncated(t *testing.T) {
 		if !errors.Is(err, ErrDecodeFailed) {
 			t.Fatalf("%s: expected ErrDecodeFailed, got %v", name, err)
 		}
+	}
+}
+
+// A string too long for its length prefix must return ErrEncodeFailed, not wrap
+// the prefix (the receiver would read the rest of the string as other fields).
+func TestBinaryEncoderEncodeStringTooLong(t *testing.T) {
+	e := CreateBinaryEncoder([]*RegisteredCodec{
+		{0, "string", StringCodec{}},
+		{0, "string-long", StringLongCodec{}},
+	}, UInt8Codec{})
+
+	for _, c := range []struct {
+		name string
+		max  int
+	}{{"string", 255}, {"string-long", 65535}} {
+		if _, err := e.Encode(&Message{Name: c.name, Data: strings.Repeat("a", c.max)}); err != nil {
+			t.Fatalf("%s: %d bytes should encode, got %v", c.name, c.max, err)
+		}
+
+		data, err := e.Encode(&Message{Name: c.name, Data: strings.Repeat("a", c.max+1)})
+		if data != nil || !errors.Is(err, ErrEncodeFailed) {
+			t.Fatalf("%s: %d bytes: expected ErrEncodeFailed, got %v / %v", c.name, c.max+1, data, err)
+		}
+	}
+
+	// Multi-byte: 128 × "é" is 128 chars but 256 bytes.
+	if _, err := e.Encode(&Message{Name: "string", Data: strings.Repeat("é", 128)}); !errors.Is(err, ErrEncodeFailed) {
+		t.Fatalf("128 × é: expected ErrEncodeFailed, got %v", err)
 	}
 }

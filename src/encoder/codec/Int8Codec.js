@@ -4,6 +4,9 @@ import Codec from './Codec.js';
  *  8 bit signed Int codec (-128 to 127)
  */
 export default class Int8Codec extends Codec {
+    static minimum = -128;
+    static maximum = 127;
+
     /**
      * @type {Number}
      */
@@ -14,14 +17,14 @@ export default class Int8Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setInt8(offset, data);
+    encode(cursor, data) {
+        cursor.writeInt8(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getInt8(offset);
+    decode(cursor) {
+        return cursor.readInt8();
     }
 }

@@ -4,6 +4,9 @@ import Codec from './Codec.js';
  *  16 bit signed Int codec (-32768 to 32767)
  */
 export default class Int16Codec extends Codec {
+    static minimum = -32768;
+    static maximum = 32767;
+
     /**
      * @type {Number}
      */
@@ -14,14 +17,14 @@ export default class Int16Codec extends Codec {
     /**
      * {@inheritdoc}
      */
-    encode(buffer, offset, data) {
-        new DataView(buffer).setInt16(offset, data);
+    encode(cursor, data) {
+        cursor.writeInt16(data);
     }
 
     /**
      * {@inheritdoc}
      */
-    decode(buffer, offset) {
-        return new DataView(buffer).getInt16(offset);
+    decode(cursor) {
+        return cursor.readInt16();
     }
 }
