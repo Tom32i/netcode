@@ -391,6 +391,11 @@ describe('StringCodec edge cases', () => {
     expect(roundTrip(codec, null)).toBe('');
   });
 
+  test('Should encode a number as its string', () => {
+    expect(roundTrip(codec, 123)).toBe('123');
+    expect(roundTrip(new StringLongCodec(), 123)).toBe('123');
+  });
+
   test('Should encode/decode a lone surrogate as U+FFFD', () => {
     expect(roundTrip(codec, 'a\uD83Db')).toBe('a\uFFFDb');
   });

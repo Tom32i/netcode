@@ -25,7 +25,7 @@ export default class StringLongCodec extends Codec {
      * @type {Number}
      */
     getByteLength(data) {
-        return 2 + checkLength(utf8ByteLength(data || ''));
+        return 2 + checkLength(utf8ByteLength(String(data || '')));
     }
 
     /**
@@ -35,7 +35,7 @@ export default class StringLongCodec extends Codec {
         // Reserve the length prefix, then fill it with the byte count actually written
         const lengthOffset = cursor.reserve(2);
 
-        cursor.view.setUint16(lengthOffset, checkLength(cursor.writeUtf8(data || '')));
+        cursor.view.setUint16(lengthOffset, checkLength(cursor.writeUtf8(String(data || ''))));
     }
 
     /**
