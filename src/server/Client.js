@@ -60,10 +60,13 @@ export default class Client extends EventEmitter {
 
     /**
      * Close WebSocket connection
+     *
+     * @param {Number} code Optional WebSocket close code
+     * @param {String} reason Optional close reason
      */
-    close() {
+    close(code, reason) {
         if (this.socket) {
-            this.socket.close();
+            this.socket.close(code, reason);
         }
     }
 
